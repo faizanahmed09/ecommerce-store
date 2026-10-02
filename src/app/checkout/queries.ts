@@ -8,7 +8,7 @@
  * on failure, returns the new order id. No React here.
  */
 
-import { createClient } from "@/src/app/lib/supabase/client";
+import { createClient, createPublicClient } from "@/src/app/lib/supabase/client";
 import type { CartItem } from "@/src/app/components/cart-provider";
 import type { OrderTotals } from "@/src/app/lib/order-totals";
 
@@ -116,7 +116,7 @@ export async function checkStock(items: CartItem[]): Promise<StockShortfall[]> {
   const productIds = [...new Set(items.map((item) => item.productId))];
   const variantIds = [...new Set(items.flatMap((item) => item.variantIds))];
 
-  const { data: products, error: productError } = await supabase
+  const { data: products, error: productError } = await createPublicClient()
     .from("products")
     .select("id, stock_quantity")
     .in("id", productIds);
@@ -154,7 +154,9 @@ export async function checkStock(items: CartItem[]): Promise<StockShortfall[]> {
      * reads as unavailable rather than unlimited.
      */
     const available =
-      item.variantIds.length > 0
+      !productStock.has(item.productId)
+        ? 0
+        : item.variantIds.length > 0
         ? Math.min(...item.variantIds.map((id) => variantStock.get(id) ?? 0))
         : (productStock.get(item.productId) ?? 0);
 

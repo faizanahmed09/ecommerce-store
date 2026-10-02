@@ -299,7 +299,7 @@ export function DataTable<TData extends RowData>({
                 <tr
                   key={row.id}
                   data-state={row.getIsSelected() ? "selected" : undefined}
-                  className="transition-colors hover:bg-neutral-50/50 data-[state=selected]:bg-[#FF3D6E]/5"
+                  className="transition-colors hover:bg-neutral-50/50 data-[state=selected]:bg-brand/5"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td

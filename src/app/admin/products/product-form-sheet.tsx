@@ -435,6 +435,23 @@ export function ProductFormSheet({
           </Select>
         </FormField>
 
+        <FormField id="form-piece-count" label="Pieces">
+          <Select
+            value={values.pieceCount || "none"}
+            onValueChange={(value) => setValue("pieceCount", value === "none" ? "" : value as "2" | "3")}
+            disabled={busy}
+          >
+            <SelectTrigger id="form-piece-count" className={INPUT_CLASS}>
+              <SelectValue placeholder="Not specified" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Not specified</SelectItem>
+              <SelectItem value="2">2 Piece</SelectItem>
+              <SelectItem value="3">3 Piece</SelectItem>
+            </SelectContent>
+          </Select>
+        </FormField>
+
         <div className="grid grid-cols-2 gap-4">
           <FormField id="form-price" label="Price (Rs.)" required>
             <Input
@@ -452,17 +469,22 @@ export function ProductFormSheet({
           </FormField>
 
           <FormField id="form-sale-price" label="Sale Price">
-            <Input
-              id="form-sale-price"
-              type="number"
-              min="0"
-              step="0.01"
-              value={values.salePrice}
-              onChange={(event) => setValue("salePrice", event.target.value)}
-              placeholder="Optional"
-              disabled={busy}
-              className={INPUT_CLASS}
-            />
+            <div className="space-y-1.5">
+              <Input
+                id="form-sale-price"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={values.salePrice}
+                onChange={(event) => setValue("salePrice", event.target.value)}
+                placeholder="Optional"
+                disabled={busy}
+                className={INPUT_CLASS}
+              />
+              <p className="text-[11px] leading-4 text-neutral-500">
+                Enter a price lower than the regular price. The product will also appear under Sale.
+              </p>
+            </div>
           </FormField>
         </div>
 

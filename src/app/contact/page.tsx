@@ -17,13 +17,13 @@ import Link from "next/link";
 export const instant = false;
 
 export const metadata = {
-  title: "Contact Us | Lamees",
+  title: "Contact Us | HAANI Threads",
   description:
-    "Reach the Lamees team on WhatsApp, by phone or by email — we usually reply the same day.",
+    "Reach the HAANI Threads team on WhatsApp or by phone for order and collection questions.",
   alternates: { canonical: "/contact" },
 };
 
-const ENQUIRY = "Hi! I have a question about Lamees.";
+const ENQUIRY = "Hi! I have a question about HAANI Threads.";
 
 /*
  * ---------------------------------------------------------
@@ -56,7 +56,7 @@ const CHANNELS = [
     detail: "Best for order queries and returns.",
     external: false,
   },
-];
+].filter((channel) => channel.value);
 
 export default function ContactPage() {
   return (

@@ -27,14 +27,14 @@ import {
 } from "@/src/app/lib/store-contact";
 
 /* No trailing slash, so paths can be appended as-is. */
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://lameesofficial.com").replace(
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(
   /\/+$/,
   ""
 );
 
-export const SITE_NAME = "Lamees";
+export const SITE_NAME = "HAANI Threads";
 
-export const LOGO_PATH = "/lamees-logo.jpg";
+export const LOGO_PATH = "/haani-threads-logo-shorter-h.png";
 
 /*
  * The brand card link previews fall back to (WhatsApp,
@@ -43,23 +43,23 @@ export const LOGO_PATH = "/lamees-logo.jpg";
  * config and would replace a product's own photo.
  */
 export const DEFAULT_OG_IMAGE = {
-  url: "/og-image.jpg",
-  width: 1200,
-  height: 630,
-  alt: "Lamees - Pakistani eastern wear, embroidered and stitched suits",
+  url: "/haani-fabrics-hero.png",
+  width: 1536,
+  height: 1024,
+  alt: "HAANI Threads - summer and winter unstitched fabrics",
 };
 
-export const DEFAULT_TITLE = "Lamees | Embroidered & Stitched Eastern Wear in Pakistan";
+export const DEFAULT_TITLE = "HAANI Threads | Summer & Winter Unstitched";
 
 export const DEFAULT_DESCRIPTION =
-  "Shop Pakistani eastern wear at Lamees: embroidered dresses, stitched & unstitched 3-piece suits, lawn and kurtis for women. Cash on delivery nationwide.";
+  "Discover summer and winter unstitched fabrics at HAANI Threads. Explore Pakistani prints and embroidery to tailor your way, with delivery across Pakistan.";
 
 /*
  * Grouped by intent so it is obvious where a new phrase
  * belongs. Flattened for the keywords meta tag.
  */
 export const SEO_KEYWORDS = {
-  brand: ["Lamees", "Lamees official", "Lamees clothing", "Lamees Lahore"],
+  brand: ["HAANI Threads", "HAANI Threads unstitched", "HAANI Threads clothing"],
   eastern: [
     "eastern wear",
     "women's eastern wear",
@@ -98,12 +98,12 @@ export const SEO_KEYWORDS = {
     "Eid collection",
     "wedding wear",
   ],
-  local: ["online shopping Pakistan", "cash on delivery Pakistan", "clothing store Lahore"],
+  local: ["online shopping Pakistan", "cash on delivery Pakistan", "unstitched fabric Pakistan"],
 } as const;
 
 export const ALL_KEYWORDS: string[] = Object.values(SEO_KEYWORDS).flat();
 
-/* "/women/dresses" -> "https://lameesofficial.com/women/dresses" */
+/* "/summer-unstitched" -> the matching URL on NEXT_PUBLIC_SITE_URL */
 export const absoluteUrl = (path = "/"): string =>
   path.startsWith("http") ? path : `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 
@@ -190,12 +190,12 @@ export function organizationJsonLd(): JsonLdObject {
     "@type": "ClothingStore",
     "@id": `${SITE_URL}/#organization`,
     name: SITE_NAME,
-    alternateName: ["Lamees Official", "لمیس"],
+    alternateName: ["HAANI Threads Official"],
     url: SITE_URL,
     logo: absoluteUrl(LOGO_PATH),
     image: absoluteUrl(DEFAULT_OG_IMAGE.url),
     description: DEFAULT_DESCRIPTION,
-    email: STORE_EMAIL,
+    ...(STORE_EMAIL ? { email: STORE_EMAIL } : {}),
     telephone: STORE_PHONE,
     priceRange: "Rs",
     currenciesAccepted: "PKR",
@@ -203,8 +203,6 @@ export function organizationJsonLd(): JsonLdObject {
     address: {
       "@type": "PostalAddress",
       streetAddress: STORE_ADDRESS,
-      addressLocality: "Lahore",
-      addressRegion: "Punjab",
       addressCountry: "PK",
     },
     areaServed: { "@type": "Country", name: "Pakistan" },
@@ -212,7 +210,7 @@ export function organizationJsonLd(): JsonLdObject {
   };
 }
 
-/* Tells Google the site's name, so results read "Lamees" rather than the domain. */
+/* Tells Google the site's name, so results read "HAANI Threads" rather than the domain. */
 export function websiteJsonLd(): JsonLdObject {
   return {
     "@context": "https://schema.org",
@@ -221,7 +219,7 @@ export function websiteJsonLd(): JsonLdObject {
     name: SITE_NAME,
     url: SITE_URL,
     inLanguage: "en-PK",
-    alternateName: ["Lamees Official", "lameesofficial.com"],
+    alternateName: ["HAANI Threads Official"],
     publisher: { "@id": `${SITE_URL}/#organization` },
   };
 }
@@ -286,7 +284,7 @@ export function productJsonLd(product: StorefrontProduct, path: string): JsonLdO
 export function defaultProductDescription(product: StorefrontProduct): string {
   const category = product.categories?.name;
 
-  return `Buy ${product.name}${category ? ` from our ${category} collection` : ""} online at Lamees. Pakistani eastern wear with cash on delivery across Pakistan.`;
+  return `Buy ${product.name}${category ? ` from our ${category} collection` : ""} online at HAANI Threads. Pakistani eastern wear with cash on delivery across Pakistan.`;
 }
 
 /*

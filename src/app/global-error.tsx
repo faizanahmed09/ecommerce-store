@@ -36,7 +36,7 @@ export default function GlobalError({
       >
         <div style={{ maxWidth: 420, padding: 32, textAlign: "center" }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, margin: "0 0 12px" }}>
-            Lamees is temporarily unavailable
+            HAANI Threads is temporarily unavailable
           </h1>
 
           <p

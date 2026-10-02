@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { BrandLogo } from "@/src/app/components/brand-logo";
 import { FooterShopLinks } from "@/src/app/components/footer-shop-links";
 import {
   mailtoHref,
@@ -20,10 +21,9 @@ import {
   Twitter,
   Youtube,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
-const DEVELOPER_URL = "https://abdullahdev.website/";
+const DEVELOPER_URL = "https://faizan-official.vercel.app/";
 
 const quickLinks = [
   { label: "About Us", href: "/about" },
@@ -57,7 +57,7 @@ export default function Footer({ year }: { year: number }) {
               </span>
 
               <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                Get the latest from Lamees.
+                Get the latest from HAANI Threads.
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">
@@ -97,21 +97,15 @@ export default function Footer({ year }: { year: number }) {
           <div className="col-span-2 lg:col-span-1">
             <Link
               href="/"
-              className="inline-flex items-center gap-3 text-2xl font-bold tracking-tight transition-opacity hover:opacity-70"
+              className="inline-flex items-center transition-opacity hover:opacity-70"
+              aria-label="HAANI Threads home"
             >
-              <Image
-                src="/lamees-logo.jpg"
-                alt="Lamees logo"
-                width={48}
-                height={48}
-                className="h-12 w-12 rounded-md"
-              />
-              LAMEES
+              <BrandLogo className="w-[175px]" />
             </Link>
 
             <p className="mt-5 max-w-sm text-sm leading-6 text-muted-foreground">
-              Pakistani eastern wear from Lahore - embroidered dresses, stitched and unstitched
-              suits, and kurtis for women, delivered across Pakistan with cash on delivery.
+              Unstitched fabrics for the seasons and moments that matter, ready to tailor your way.
+              Explore the collection with delivery across Pakistan.
             </p>
 
             {/* Socials */}
@@ -205,7 +199,7 @@ export default function Footer({ year }: { year: number }) {
                 </div>
               </li>
 
-              <li className="flex items-center gap-3">
+              {STORE_EMAIL && <li className="flex items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border bg-muted/50">
                   <Mail className="h-4 w-4" />
                 </div>
@@ -221,7 +215,7 @@ export default function Footer({ year }: { year: number }) {
                     {STORE_EMAIL}
                   </a>
                 </div>
-              </li>
+              </li>}
             </ul>
           </div>
         </div>
@@ -235,7 +229,7 @@ export default function Footer({ year }: { year: number }) {
               </div>
 
               <div>
-                <p className="text-sm font-medium">Website designed &amp; developed by Abdullah</p>
+                <p className="text-sm font-medium">Website designed &amp; developed by Faizan</p>
                 <p className="text-xs text-muted-foreground">
                   Need a site like this? Let&apos;s build something together.
                 </p>
@@ -254,7 +248,7 @@ export default function Footer({ year }: { year: number }) {
         {/* Bottom Bar */}
         <div className="mt-7 border-t pt-7">
           <div className="flex flex-col gap-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-            <p>© {year} Lamees. All rights reserved.</p>
+            <p>© {year} HAANI Threads. All rights reserved.</p>
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
               <Link href="/privacy" className="transition-colors hover:text-foreground">

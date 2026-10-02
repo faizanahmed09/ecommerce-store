@@ -27,6 +27,7 @@ export type ImportField =
   | "price"
   | "sale_price"
   | "stock_quantity"
+  | "piece_count"
   | "category"
   | "featured"
   | "image_url"
@@ -88,6 +89,13 @@ export const IMPORT_COLUMNS: readonly ColumnSpec[] = [
     required: false,
     aliases: ["stockquantity", "stock", "quantity", "qty", "inventory"],
     example: "50",
+  },
+  {
+    field: "piece_count",
+    label: "piece_count",
+    required: false,
+    aliases: ["piececount", "pieces", "piece", "suitpieces"],
+    example: "2",
   },
   {
     field: "category",
@@ -169,6 +177,7 @@ export interface ImportProductValues {
   price: number;
   sale_price: number | null;
   stock_quantity: number;
+  piece_count?: 2 | 3 | null;
   category_id: string;
   featured: boolean;
 }
@@ -375,12 +384,23 @@ function validateRow(
 
     if (parsed === null) {
       errors.push(`Sale price "${salePriceInput}" is not a number.`);
-    } else if (parsed < 0) {
-      errors.push("Sale price cannot be negative.");
-    } else if (price !== null && parsed > price) {
-      errors.push("Sale price cannot be greater than the price.");
+    } else if (parsed <= 0) {
+      errors.push("Sale price must be greater than 0.");
+    } else if (price !== null && parsed >= price) {
+      errors.push("Sale price must be lower than the regular price.");
     } else {
       salePrice = parsed;
+    }
+  }
+
+  const pieceInput = read("piece_count");
+  let pieceCount: 2 | 3 | null = null;
+  if (pieceInput !== "") {
+    const parsed = Number(pieceInput);
+    if (parsed === 2 || parsed === 3) {
+      pieceCount = parsed;
+    } else {
+      errors.push("Piece count must be 2 or 3.");
     }
   }
 
@@ -505,6 +525,7 @@ function validateRow(
           price: price as number,
           sale_price: salePrice,
           stock_quantity: stock,
+          ...(cells.piece_count !== undefined ? { piece_count: pieceCount } : {}),
           category_id: categoryId,
           featured: featured as boolean,
         }

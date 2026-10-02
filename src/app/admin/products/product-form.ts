@@ -44,6 +44,7 @@ export interface ProductFormValues {
   price: string;
   salePrice: string;
   stock: string;
+  pieceCount: "" | "2" | "3";
   categoryId: string;
   featured: boolean;
   /* Ordered: position in this list becomes display_order. */
@@ -80,6 +81,7 @@ export const emptyProductForm = (categoryId = ""): ProductFormValues => ({
   price: "",
   salePrice: "",
   stock: "",
+  pieceCount: "",
   categoryId,
   featured: false,
   images: [],
@@ -93,6 +95,7 @@ export const productFormValues = (product: Product): ProductFormValues => ({
   price: String(product.price),
   salePrice: product.sale_price !== null ? String(product.sale_price) : "",
   stock: String(product.stock_quantity),
+  pieceCount: product.piece_count === null ? "" : String(product.piece_count) as "2" | "3",
   categoryId: product.category_id ?? "",
   featured: product.featured,
   images: product.product_images.map((image) => ({
@@ -172,17 +175,24 @@ export function validateProductForm(
     );
   }
 
+  if (values.pieceCount !== "" && values.pieceCount !== "2" && values.pieceCount !== "3") {
+    return invalid("Invalid piece count", "Choose 2 Piece, 3 Piece, or Not specified.");
+  }
+
   let salePrice: number | null = null;
 
   if (values.salePrice.trim() !== "") {
     salePrice = Number.parseFloat(values.salePrice);
 
-    if (!Number.isFinite(salePrice) || salePrice < 0) {
-      return invalid("Invalid sale price", "Sale price must be a valid number.");
+    if (!Number.isFinite(salePrice) || salePrice <= 0) {
+      return invalid("Invalid sale price", "Sale price must be greater than 0.");
     }
 
-    if (salePrice > price) {
-      return invalid("Invalid sale price", "Sale price cannot be greater than the regular price.");
+    if (salePrice >= price) {
+      return invalid(
+        "Invalid sale price",
+        "Sale price must be lower than the regular price."
+      );
     }
   }
 
@@ -296,6 +306,7 @@ export function validateProductForm(
       price,
       sale_price: salePrice,
       stock_quantity: stock,
+      piece_count: values.pieceCount === "" ? null : (Number(values.pieceCount) as 2 | 3),
       category_id: values.categoryId,
       featured: values.featured,
     },

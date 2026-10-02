@@ -38,7 +38,7 @@ export type NavFeature = {
 export type NavCategory = {
   name: string;
   href: string;
-  /** Highlighted in the brand pink (sale / promo entries). */
+  /** Highlighted in the brand accent (sale / promo entries). */
   accent?: boolean;
   groups?: NavGroup[];
   feature?: NavFeature;
@@ -114,11 +114,13 @@ const toColumns = (links: NavLink[]): NavGroup[] => {
 
 const SECTION_GRADIENTS: Record<string, string> = {
   men: "from-neutral-900 to-neutral-600",
-  women: "from-[#B5468A] to-[#4C1D3D]",
+  women: "from-[#a47c72] to-[#493932]",
   kids: "from-[#2F6DB5] to-[#123055]",
   footwear: "from-[#1F7A6C] to-[#0C3A33]",
   fragrance: "from-[#8A6A3A] to-[#3A2A14]",
-  "winter-wear": "from-[#3B5A78] to-[#16232F]",
+  "winter-wear": "from-[#67786e] to-[#283a34]",
+  "summer-unstitched": "from-[#d0ad97] to-[#7d5a4d]",
+  "winter-unstitched": "from-[#74877c] to-[#37483f]",
 };
 
 const FALLBACK_GRADIENTS = [
@@ -211,7 +213,7 @@ const saleCategory = (departments: CategoryRecord[]): NavCategory => ({
     description: "Reduced lines across every department, while stocks last.",
     href: "/sale",
     cta: "Shop all offers",
-    gradient: "from-brand to-[#7C2D12]",
+    gradient: "from-brand to-[#4b352f]",
   },
 });
 
@@ -264,10 +266,16 @@ export function buildNavCategories(categories: CategoryRecord[]): NavCategory[] 
     return [];
   }
 
-  return [saleCategory(departments), newInCategory, ...departmentEntries];
+  const seasonalSlugs = new Set(["/summer-unstitched", "/winter-unstitched"]);
+  const seasonalEntries = departmentEntries.filter((entry) => seasonalSlugs.has(entry.href));
+  const otherEntries = departmentEntries.filter((entry) => !seasonalSlugs.has(entry.href));
+
+  return [saleCategory(departments), newInCategory, ...seasonalEntries, ...otherEntries];
 }
 
 export const utilityLinks: NavLink[] = [
+  { name: "My Account", href: "/account" },
+  { name: "Wishlist", href: "/wishlist" },
   { name: "Sign In", href: "/login" },
   { name: "Create Account", href: "/signup" },
   { name: "Track Order", href: "/track-order" },

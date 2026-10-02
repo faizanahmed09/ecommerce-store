@@ -14,15 +14,7 @@ import type { Product, ProductImage, ProductPayload, ProductVariant } from "./ty
 import { revalidateProducts } from "@/src/app/lib/revalidate";
 
 const PRODUCT_SELECT = `
-  id,
-  name,
-  slug,
-  description,
-  price,
-  sale_price,
-  stock_quantity,
-  category_id,
-  featured,
+  *,
   categories:category_id (
     name,
     slug
@@ -54,8 +46,10 @@ type ProductRow = {
   price: number | string;
   sale_price: number | string | null;
   stock_quantity: number | string;
+  piece_count?: number | string | null;
   category_id: string | null;
   featured: boolean | null;
+  is_enabled?: boolean;
   categories: { name?: string; slug?: string } | { name?: string; slug?: string }[] | null;
   product_images:
     | {
@@ -85,8 +79,15 @@ const normaliseProduct = (row: ProductRow): Product => ({
   sale_price:
     row.sale_price === null || row.sale_price === undefined ? null : Number(row.sale_price),
   stock_quantity: Number(row.stock_quantity),
+  piece_count:
+    row.piece_count === 2 || row.piece_count === "2"
+      ? 2
+      : row.piece_count === 3 || row.piece_count === "3"
+        ? 3
+        : null,
   category_id: row.category_id,
   featured: Boolean(row.featured),
+  is_enabled: row.is_enabled !== false,
 
   categories:
     row.categories && !Array.isArray(row.categories)
@@ -143,6 +144,19 @@ export async function fetchProducts(): Promise<Product[]> {
   }
 
   return ((data ?? []) as unknown as ProductRow[]).map(normaliseProduct);
+}
+
+export async function setProductEnabled(productId: string, isEnabled: boolean): Promise<void> {
+  const { error } = await createClient()
+    .from("products")
+    .update({ is_enabled: isEnabled })
+    .eq("id", productId);
+
+  if (error) {
+    throw error;
+  }
+
+  await revalidateProducts();
 }
 
 /* What the sheet hands over once uploads have resolved to urls. */

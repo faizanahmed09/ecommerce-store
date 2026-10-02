@@ -24,6 +24,7 @@ import {
   type ProductQuery,
   type StorefrontProduct,
 } from "@/src/app/lib/products";
+import { createPublicClient } from "@/src/app/lib/supabase/client";
 import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 
@@ -78,7 +79,7 @@ export function useProductList({
     error,
   } = useQuery({
     queryKey: [PRODUCTS_KEY, filters],
-    queryFn: () => fetchStorefrontProducts(filters),
+    queryFn: () => fetchStorefrontProducts(filters, createPublicClient()),
     enabled,
   });
 
@@ -160,7 +161,8 @@ export function useProductPages({
       fetchStorefrontProductPage(
         { ...filters, cardsOnly: true, limit: pageSize, offset: pageParam },
         /* The total is the same for every page; ask once. */
-        pageParam === 0
+        pageParam === 0,
+        createPublicClient()
       ),
     /*
      * A short page means the end of the list. Counting rows

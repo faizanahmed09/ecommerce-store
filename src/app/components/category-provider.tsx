@@ -13,7 +13,7 @@
  * It is now fetched once - on the first page a visitor opens -
  * and held here. Every later page, storefront and admin alike,
  * reads the rows already in hand, and a reload reads them back
- * from localStorage rather than the network.
+ * from localStorage while the cache is fresh.
  *
  * The store is refilled when the admin adds, edits or removes a
  * category (see `invalidateCategories`) - not on a timer, and
@@ -26,6 +26,7 @@
 
 import { buildNavCategories, type NavCategory } from "@/src/app/lib/navigation";
 import { fetchCategories, type CategoryRecord } from "@/src/app/lib/categories";
+import { visibleCategories } from "@/src/app/lib/category-visibility";
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 
@@ -33,18 +34,16 @@ import type { ReactNode } from "react";
  * Bump the version when the shape of CategoryRecord changes -
  * an old entry would otherwise be read back as the new shape.
  */
-const CACHE_KEY = "lamees:categories:v1";
+const CACHE_KEY = "haani:categories:v4";
 
 /*
- * A backstop, not a refresh policy. Admin writes invalidate the
- * store directly; this only covers the browser that never sees
- * one - a shopper whose device cached before the admin, working
- * elsewhere, added a department.
+ * Admin writes explicitly invalidate the cache. This TTL is a
+ * backstop for changes made outside the app, such as SQL Editor edits.
  */
 const CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 /* Same-tab invalidation. Other tabs hear the `storage` event. */
-const INVALIDATED_EVENT = "lamees:categories:invalidated";
+const INVALIDATED_EVENT = "haani:categories:invalidated";
 
 const EMPTY: CategoryRecord[] = [];
 
@@ -280,7 +279,7 @@ export function useRootCategories(): CategoryStore {
   const store = useCategoryStore();
 
   const categories = useMemo(
-    () => store.categories.filter((category) => !category.parent_id),
+    () => visibleCategories(store.categories).filter((category) => !category.parent_id),
     [store.categories]
   );
 
@@ -295,13 +294,14 @@ export function useCategoryChildren(parentSlug: string): CategoryStore {
   const store = useCategoryStore();
 
   const categories = useMemo(() => {
-    const parent = store.categories.find((category) => category.slug === parentSlug);
+    const visible = visibleCategories(store.categories);
+    const parent = visible.find((category) => category.slug === parentSlug);
 
     if (!parent) {
       return EMPTY;
     }
 
-    return store.categories.filter((category) => category.parent_id === parent.id);
+    return visible.filter((category) => category.parent_id === parent.id);
   }, [store.categories, parentSlug]);
 
   return useMemo(() => ({ ...store, categories }), [store, categories]);
@@ -318,7 +318,7 @@ export function useNavigation(): {
   const { categories, loading } = useCategoryStore();
 
   return useMemo(
-    () => ({ categories: buildNavCategories(categories), loading }),
+    () => ({ categories: buildNavCategories(visibleCategories(categories)), loading }),
     [categories, loading]
   );
 }

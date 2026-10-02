@@ -39,6 +39,7 @@ export interface Crumb {
 
 interface ProductListingProps {
   title: string;
+  collectionStyle?: boolean;
   description?: string;
   /* "Home" is prepended; the current page is appended last. */
   crumbs?: Crumb[];
@@ -85,6 +86,7 @@ interface ProductListingProps {
   newWithinMonths?: number;
   /* Scopes the filter rail's options. */
   filterCategoryId?: string;
+  showPieceFilter?: boolean;
 }
 
 export const readString = (value: string | string[] | undefined): string | undefined =>
@@ -103,6 +105,7 @@ export const readNumber = (value: string | string[] | undefined): number | undef
 
 export async function ProductListing({
   title,
+  collectionStyle = false,
   description,
   crumbs = [],
   crumbLabel,
@@ -117,6 +120,7 @@ export async function ProductListing({
   defaultSort,
   newWithinMonths,
   filterCategoryId,
+  showPieceFilter = false,
 }: ProductListingProps) {
   /*
    * Started, not awaited. The filter options and the product
@@ -158,7 +162,7 @@ export async function ProductListing({
 
   return (
     <Container className="py-10 lg:py-14">
-      <header className="mb-10 border-b pb-8">
+      <header className={collectionStyle ? "mb-8 border-b border-neutral-200" : "mb-10 border-b pb-8"}>
         {showBreadcrumb && (
           <nav aria-label="Breadcrumb" className="mb-3">
             <ol className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
@@ -189,10 +193,26 @@ export async function ProductListing({
           </nav>
         )}
 
-        <Heading className="text-3xl font-semibold tracking-tight sm:text-4xl">{title}</Heading>
+        <Heading
+          className={
+            collectionStyle
+              ? "py-6 text-center text-xl font-normal uppercase leading-snug tracking-[0.08em] sm:py-8 sm:text-4xl sm:tracking-[0.18em]"
+              : "text-3xl font-semibold tracking-tight sm:text-4xl"
+          }
+        >
+          {title}
+        </Heading>
 
         {description && (
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{description}</p>
+          <p
+            className={
+              collectionStyle
+                ? "mx-auto mt-1 max-w-2xl text-center text-sm leading-6 text-muted-foreground"
+                : "mt-2 max-w-2xl text-sm leading-6 text-muted-foreground"
+            }
+          >
+            {description}
+          </p>
         )}
 
         {headerExtra}
@@ -204,7 +224,7 @@ export async function ProductListing({
       >
         {/* Filters travel with the shopper on long lists. */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <ProductFilters categoryId={filterCategoryId} options={variantOptions} />
+          <ProductFilters categoryId={filterCategoryId} options={variantOptions} showPieceFilter={showPieceFilter} />
         </aside>
 
         <div className="min-w-0">

@@ -6,8 +6,8 @@ import { Suspense } from "react";
 export const instant = false;
 
 export const metadata = {
-  title: "Create Account | Lamees",
-  description: "Create a Lamees account to track orders and save your wishlist.",
+  title: "Create Account | HAANI Threads",
+  description: "Create a HAANI Threads account to track orders and save your wishlist.",
   robots: { index: false, follow: true },
 };
 

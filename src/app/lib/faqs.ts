@@ -150,7 +150,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
     title: "Contact",
     items: [
       {
-        question: "How can I contact Lamees?",
+        question: "How can I contact HAANI Threads?",
         answer: `WhatsApp is the fastest way to reach us, and you can also call or email. We are available ${STORE_HOURS}.`,
       },
     ],

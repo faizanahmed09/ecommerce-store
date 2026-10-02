@@ -2,14 +2,13 @@ import {
   getCategoriesBySlugs,
   getCategoryChildren,
   getRootCategories,
-  preloadListing,
 } from "@/src/app/lib/catalogue";
-import { DEPARTMENT_SECTION_SIZE } from "@/src/app/lib/products";
-import { DepartmentPage } from "@/src/app/components/department-page";
+import { CollectionSubcategories } from "@/src/app/components/collection-subcategories";
+import { ProductListing } from "@/src/app/components/product-listing";
+import { JsonLd } from "@/src/app/components/json-ld";
 import { type CategoryRecord } from "@/src/app/lib/categories";
 import { buildDepartment, RESERVED_SLUGS } from "@/src/app/lib/departments";
 import { notFound } from "next/navigation";
-import { JsonLd } from "@/src/app/components/json-ld";
 import { breadcrumbJsonLd, pageMetadata } from "@/src/app/lib/seo";
 
 /*
@@ -77,7 +76,7 @@ export async function generateMetadata({ params }: PageProps) {
   const department = buildDepartment(category);
 
   return pageMetadata({
-    title: `${department.metaTitle} | Lamees`,
+    title: `${department.metaTitle} | HAANI Threads`,
     description: department.metaDescription,
     path: `/${department.slug}`,
     ...(department.imageUrl ? { images: [department.imageUrl] } : {}),
@@ -92,20 +91,7 @@ export default async function DepartmentRoute({ params }: PageProps) {
     notFound();
   }
 
-  const department = buildDepartment(category);
-
-  /*
-   * The rail's data, resolved here instead of in the browser.
-   *
-   * It used to take two round trips per visitor to draw: the
-   * category tree, then the products belonging to whichever
-   * children came back. Both are cached scopes now, so one read
-   * serves everyone and the products are in the first paint.
-   *
-   * Products belong to the children ("women-dresses"), never to
-   * the department, so the department's own slug is included
-   * only in case something is filed directly on it.
-   */
+  /* Include products filed directly on the parent as well as its children. */
   const children = await getCategoryChildren(category.slug).catch((error: unknown) => {
     console.error("Could not resolve department children:", error);
     return [];
@@ -113,28 +99,22 @@ export default async function DepartmentRoute({ params }: PageProps) {
 
   const slugs = [category.slug, ...children.map((child) => child.slug)];
 
-  /* Products AND their stars - the rail was only getting the former. */
-  const preloaded = await preloadListing({
-    categorySlugs: slugs,
-    sort: department.section.sort,
-    cardsOnly: true,
-    limit: DEPARTMENT_SECTION_SIZE,
-    offset: 0,
-  });
-
   return (
     <>
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: department.name, path: `/${department.slug}` },
+          { name: category.name, path: `/${category.slug}` },
         ])}
       />
-      <DepartmentPage
-        department={department}
-        serverSlugs={slugs}
-        initialPage={preloaded.page}
-        initialStats={preloaded.stats}
+      <ProductListing
+        title={category.name}
+        crumbLabel={category.name}
+        description={category.description ?? undefined}
+        collectionStyle
+        headerExtra={<CollectionSubcategories parent={category} categories={children} />}
+        categorySlugs={slugs}
+        filterCategoryId={category.id}
       />
     </>
   );

@@ -15,9 +15,9 @@ import Link from "next/link";
 export const instant = false;
 
 export const metadata = {
-  title: "Returns & Exchanges | Lamees",
+  title: "Returns & Exchanges | HAANI Threads",
   description:
-    "How to exchange something you bought from Lamees: the window, the condition we can accept items in, and how to start.",
+    "How to exchange something you bought from HAANI Threads: the window, the condition we can accept items in, and how to start.",
   alternates: { canonical: "/returns" },
 };
 
@@ -36,7 +36,7 @@ export const metadata = {
  * ends up contradicting itself.
  */
 
-const EXCHANGE_ENQUIRY = "Hi! I'd like to exchange something from my Lamees order.";
+const EXCHANGE_ENQUIRY = "Hi! I'd like to exchange something from my HAANI Threads order.";
 
 const SUMMARY = [
   {
@@ -118,12 +118,12 @@ export default function ReturnsPage() {
                 </a>
               </Button>
 
-              <Button asChild variant="outline" className="w-full rounded-full">
+              {STORE_EMAIL && <Button asChild variant="outline" className="w-full rounded-full">
                 <a href={mailtoHref}>
                   <Mail className="mr-2 h-4 w-4" />
                   {STORE_EMAIL}
                 </a>
-              </Button>
+              </Button>}
             </div>
 
             <p className="mt-5 border-t pt-4 text-xs leading-5 text-muted-foreground">

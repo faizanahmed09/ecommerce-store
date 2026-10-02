@@ -258,6 +258,7 @@ export type Database = {
           description: string | null;
           id: string;
           image_url: string | null;
+          is_enabled: boolean;
           name: string;
           parent_id: string | null;
           slug: string;
@@ -268,6 +269,7 @@ export type Database = {
           description?: string | null;
           id?: string;
           image_url?: string | null;
+          is_enabled?: boolean;
           name: string;
           parent_id?: string | null;
           slug: string;
@@ -278,6 +280,7 @@ export type Database = {
           description?: string | null;
           id?: string;
           image_url?: string | null;
+          is_enabled?: boolean;
           name?: string;
           parent_id?: string | null;
           slug?: string;
@@ -495,9 +498,11 @@ export type Database = {
       products: {
         Row: {
           category_id: string | null;
+          piece_count: number | null;
           created_at: string | null;
           description: string | null;
           featured: boolean | null;
+          is_enabled: boolean;
           id: string;
           name: string;
           price: number;
@@ -508,9 +513,11 @@ export type Database = {
         };
         Insert: {
           category_id?: string | null;
+          piece_count?: number | null;
           created_at?: string | null;
           description?: string | null;
           featured?: boolean | null;
+          is_enabled?: boolean;
           id?: string;
           name: string;
           price: number;
@@ -521,9 +528,11 @@ export type Database = {
         };
         Update: {
           category_id?: string | null;
+          piece_count?: number | null;
           created_at?: string | null;
           description?: string | null;
           featured?: boolean | null;
+          is_enabled?: boolean;
           id?: string;
           name?: string;
           price?: number;

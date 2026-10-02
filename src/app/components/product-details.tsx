@@ -9,10 +9,12 @@ import {
   Share2,
   ShieldCheck,
   Truck,
+  X,
 } from "lucide-react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/src/app/components/cart-provider";
@@ -77,6 +79,11 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [imageViewerOpen, setImageViewerOpen] = useState(false);
+  const [imageZoomed, setImageZoomed] = useState(false);
+  const imageViewerScrollRef = useRef<HTMLDivElement>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const swipeHandledRef = useRef(false);
   const [brokenImages, setBrokenImages] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("description");
 
@@ -299,12 +306,21 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     setBrokenImages((current) => (current.includes(src) ? current : [...current, src]));
   };
 
+  useEffect(() => {
+    if (!imageZoomed || !imageViewerScrollRef.current) return;
+    const frame = imageViewerScrollRef.current;
+    frame.scrollLeft = (frame.scrollWidth - frame.clientWidth) / 2;
+    frame.scrollTop = (frame.scrollHeight - frame.clientHeight) / 2;
+  }, [imageZoomed, activeImage]);
+
   /* Stepping from the clamped index, so a shrunken gallery cannot strand it. */
   const goToPreviousImage = () => {
+    setImageZoomed(false);
     setSelectedImage(activeImage === 0 ? productImages.length - 1 : activeImage - 1);
   };
 
   const goToNextImage = () => {
+    setImageZoomed(false);
     setSelectedImage((activeImage + 1) % productImages.length);
   };
 
@@ -314,15 +330,22 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         {/* Gallery */}
         <div className="lg:sticky lg:top-6">
           <div className="group relative aspect-[4/5] overflow-hidden rounded-2xl border bg-muted/30 shadow-sm">
-            <Image
-              src={resolveImage(productImages[activeImage] || FALLBACK_IMAGE)}
-              alt={product.name}
-              fill
-              preload
-              sizes="(min-width: 1024px) 440px, 100vw"
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
-              onError={() => handleImageError(productImages[activeImage] || FALLBACK_IMAGE)}
-            />
+            <button
+              type="button"
+              onClick={() => setImageViewerOpen(true)}
+              aria-label={`Open image ${activeImage + 1} of ${productImages.length} in viewer`}
+              className="absolute inset-0 h-full w-full cursor-zoom-in"
+            >
+              <Image
+                src={resolveImage(productImages[activeImage] || FALLBACK_IMAGE)}
+                alt={product.name}
+                fill
+                preload
+                sizes="(min-width: 1024px) 440px, 100vw"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
+                onError={() => handleImageError(productImages[activeImage] || FALLBACK_IMAGE)}
+              />
+            </button>
 
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
 
@@ -386,6 +409,106 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </div>
           )}
         </div>
+
+        <DialogPrimitive.Root
+          open={imageViewerOpen}
+          onOpenChange={(open) => {
+            setImageViewerOpen(open);
+            if (!open) setImageZoomed(false);
+          }}
+        >
+          <DialogPrimitive.Portal>
+            <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/90" />
+            <DialogPrimitive.Content
+              aria-describedby={undefined}
+              onClick={(event) => {
+                if (event.target === event.currentTarget) setImageViewerOpen(false);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "ArrowLeft" && productImages.length > 1) {
+                  event.preventDefault();
+                  goToPreviousImage();
+                } else if (event.key === "ArrowRight" && productImages.length > 1) {
+                  event.preventDefault();
+                  goToNextImage();
+                }
+              }}
+              className="fixed inset-0 z-[51] flex h-[100dvh] items-start justify-center overflow-hidden bg-[#161412] text-white outline-none md:items-center"
+            >
+              <DialogPrimitive.Title className="sr-only">{product.name} image viewer</DialogPrimitive.Title>
+              <div className="relative h-[min(100dvh,160vw)] w-full md:h-full md:w-[min(80vw,80dvh)]">
+                <div className="absolute left-4 top-4 z-10 rounded-full bg-black/55 px-3 py-2 text-xs font-medium">
+                  {activeImage + 1} / {productImages.length}
+                </div>
+                <div ref={imageViewerScrollRef} className="h-full w-full overflow-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (swipeHandledRef.current) {
+                        swipeHandledRef.current = false;
+                        return;
+                      }
+                      setImageZoomed((current) => !current);
+                    }}
+                    onTouchStart={(event) => {
+                      swipeHandledRef.current = false;
+                      touchStartRef.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+                    }}
+                    onTouchEnd={(event) => {
+                      const start = touchStartRef.current;
+                      touchStartRef.current = null;
+                      if (!start || imageZoomed || productImages.length < 2) return;
+                      const dx = event.changedTouches[0].clientX - start.x;
+                      const dy = event.changedTouches[0].clientY - start.y;
+                      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
+                      swipeHandledRef.current = true;
+                      if (dx < 0) goToNextImage();
+                      else goToPreviousImage();
+                    }}
+                    onTouchCancel={() => { touchStartRef.current = null; }}
+                    aria-label={imageZoomed ? "Zoom out image" : "Zoom in image"}
+                    className={imageZoomed ? "relative block h-[200%] w-[200%] cursor-zoom-out" : "relative block h-full w-full cursor-zoom-in touch-pan-y"}
+                  >
+                    <Image
+                      src={resolveImage(productImages[activeImage] || FALLBACK_IMAGE)}
+                      alt=""
+                      fill
+                      sizes={imageZoomed ? "200vw" : "100vw"}
+                      className="object-contain"
+                      onError={() => handleImageError(productImages[activeImage] || FALLBACK_IMAGE)}
+                    />
+                  </button>
+                </div>
+                <div
+                  className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-center justify-center gap-4 pb-4"
+                  style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+                >
+                  <button
+                    type="button"
+                    onClick={goToPreviousImage}
+                    disabled={productImages.length < 2}
+                    aria-label="Previous image"
+                    className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-neutral-900 shadow-lg disabled:opacity-40"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <DialogPrimitive.Close aria-label="Close image viewer" className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-neutral-900 shadow-lg">
+                    <X className="h-5 w-5" />
+                  </DialogPrimitive.Close>
+                  <button
+                    type="button"
+                    onClick={goToNextImage}
+                    disabled={productImages.length < 2}
+                    aria-label="Next image"
+                    className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-neutral-900 shadow-lg disabled:opacity-40"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+            </DialogPrimitive.Content>
+          </DialogPrimitive.Portal>
+        </DialogPrimitive.Root>
 
         {/* Product information */}
         <div className="min-w-0">
@@ -533,20 +656,20 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           })}
 
           {/* Quantity + actions */}
-          <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-            <div className="flex h-11 w-full items-center rounded-xl border bg-background sm:w-auto">
+          <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto_auto] gap-2 sm:flex sm:gap-3">
+            <div className="col-start-1 row-start-1 flex h-12 min-w-0 items-center rounded-xl border bg-background sm:h-11 sm:w-auto">
               <button
                 type="button"
                 onClick={() => setQuantity((current) => Math.max(1, current - 1))}
                 disabled={quantity <= 1}
                 aria-label="Decrease quantity"
-                className="flex h-full w-12 items-center justify-center rounded-l-xl text-lg transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-full min-w-0 flex-1 items-center justify-center rounded-l-xl text-lg transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40 sm:w-12 sm:flex-none"
               >
                 −
               </button>
               <span
                 aria-live="polite"
-                className="flex h-full w-10 items-center justify-center border-x text-sm font-semibold"
+                className="flex h-full min-w-0 flex-1 items-center justify-center border-x text-sm font-semibold sm:w-10 sm:flex-none"
               >
                 {quantity}
               </span>
@@ -557,7 +680,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 }
                 disabled={quantity >= Math.max(availableStock, 1)}
                 aria-label="Increase quantity"
-                className="flex h-full w-12 items-center justify-center rounded-r-xl text-lg transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-full min-w-0 flex-1 items-center justify-center rounded-r-xl text-lg transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40 sm:w-12 sm:flex-none"
               >
                 +
               </button>
@@ -566,7 +689,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             <Button
               onClick={handleAddToCart}
               disabled={availableStock <= 0}
-              className="h-11 flex-1 rounded-xl text-sm font-semibold shadow-sm transition-transform hover:-translate-y-0.5 disabled:translate-y-0"
+              className="col-span-3 row-start-2 h-12 w-full rounded-xl text-sm font-semibold shadow-sm transition-transform hover:-translate-y-0.5 disabled:translate-y-0 sm:h-11 sm:w-auto sm:flex-1"
             >
               {availableStock <= 0 ? "Out of stock" : "Add to cart"}
             </Button>
@@ -579,7 +702,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               disabled={savingFavorite}
               aria-label={isFavorite ? "Remove from wishlist" : "Add to wishlist"}
               aria-pressed={isFavorite}
-              className="h-11 w-11 shrink-0 rounded-xl"
+              className="col-start-2 row-start-1 h-12 w-12 shrink-0 rounded-xl sm:h-11 sm:w-11"
             >
               <Heart className={`h-5 w-5 transition ${isFavorite ? "fill-current" : ""}`} />
             </Button>
@@ -590,7 +713,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               size="icon"
               onClick={handleShare}
               aria-label="Share product"
-              className="h-11 w-11 shrink-0 rounded-xl"
+              className="col-start-3 row-start-1 h-12 w-12 shrink-0 rounded-xl sm:h-11 sm:w-11"
             >
               <Share2 className="h-5 w-5" />
             </Button>

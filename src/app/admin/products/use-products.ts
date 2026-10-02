@@ -18,7 +18,7 @@ import { useCallback, useMemo, useState } from "react";
 import { getErrorMessage, LOW_STOCK_THRESHOLD } from "../components/admin-ui";
 import { useInvalidateProducts } from "@/src/app/lib/use-product-list";
 import { useCategories } from "../lib/use-categories";
-import { deleteProduct, fetchProducts } from "./queries";
+import { deleteProduct, fetchProducts, setProductEnabled } from "./queries";
 import type { Product, StockFilter } from "./types";
 
 const NO_PRODUCTS: Product[] = [];
@@ -69,6 +69,34 @@ export function useProducts() {
   } = useAsyncData(fetchProducts, { fallback: NO_PRODUCTS, onError });
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  const toggleProduct = useCallback(async (product: Product): Promise<void> => {
+    if (togglingId !== null) return;
+
+    const nextEnabled = !product.is_enabled;
+    setTogglingId(product.id);
+
+    try {
+      await setProductEnabled(product.id, nextEnabled);
+      setProducts((current) => current.map((row) =>
+        row.id === product.id ? { ...row, is_enabled: nextEnabled } : row
+      ));
+      await invalidateStorefront();
+      toast({
+        title: nextEnabled ? "Product enabled" : "Product disabled",
+        description: `"${product.name}" is ${nextEnabled ? "visible" : "hidden"} on the storefront.`,
+      });
+    } catch (error: unknown) {
+      toast({
+        title: "Visibility update failed",
+        description: getErrorMessage(error),
+        variant: "destructive",
+      });
+    } finally {
+      setTogglingId(null);
+    }
+  }, [togglingId, setProducts, invalidateStorefront, toast]);
 
   /*
    * The table's checkboxes need somewhere to go. This is the
@@ -233,7 +261,7 @@ export function useProducts() {
           product.slug.toLowerCase().includes(search)) &&
         (categoryFilter === "all" || product.category_id === categoryFilter) &&
         matchesStockFilter(product.stock_quantity, stockFilter)
-    );
+    ).sort((a, b) => Number(b.is_enabled) - Number(a.is_enabled));
   }, [products, searchQuery, categoryFilter, stockFilter]);
 
   return {
@@ -242,6 +270,8 @@ export function useProducts() {
     filteredProducts,
     loading: loadingProducts || loadingCategories,
     deletingId,
+    togglingId,
+    toggleProduct,
     pendingDelete,
     loadData,
     requestDelete,

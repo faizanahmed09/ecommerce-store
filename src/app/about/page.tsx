@@ -10,7 +10,6 @@ import {
   MessageCircle,
   RefreshCw,
   Scissors,
-  Shirt,
   Sparkles,
   Truck,
 } from "lucide-react";
@@ -18,9 +17,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata = pageMetadata({
-  title: "About Us - Pakistani Eastern Wear for Women | Lamees",
+  title: "About HAANI Threads | Unstitched Fabrics",
   description:
-    "Lamees is a women's eastern wear label from Lahore, making embroidered dresses and stitched and unstitched suits, delivered across Pakistan with cash on delivery.",
+    "Discover HAANI Threads and its unstitched fabric collections for summer and winter, delivered across Pakistan.",
   path: "/about",
 });
 
@@ -46,21 +45,21 @@ export const metadata = pageMetadata({
 const COLLECTIONS = [
   {
     icon: Sparkles,
-    title: "Embroidered dresses",
+    title: "Summer Unstitched",
     detail:
-      "Threadwork, chikankari and embellished pieces for Eid, weddings, dawats and every celebration in between.",
+      "Expressive prints and embroidery for lighter days, ready to tailor to your own style.",
   },
   {
     icon: Scissors,
-    title: "Stitched & unstitched suits",
+    title: "Winter Unstitched",
     detail:
-      "Ready to wear 2 and 3-piece suits when you want to wear it tomorrow, and unstitched fabric when you want it tailored your way.",
+      "Seasonal fabrics and considered textures for the cooler months.",
   },
   {
-    icon: Shirt,
-    title: "Everyday pret & kurtis",
+    icon: Sparkles,
+    title: "Made your way",
     detail:
-      "Easy lawn and cotton pieces for work, college and home - comfortable, considered and made to be worn often.",
+      "Select a fabric you love and have it made into a look that feels entirely yours.",
   },
 ];
 
@@ -114,20 +113,18 @@ export default function AboutPage() {
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:gap-16">
           <div className="max-w-2xl">
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Eastern wear, made for the women who wear it
+              Fabric made for your own story
             </h1>
 
             <div className="mt-5 space-y-4 text-sm leading-7 text-muted-foreground sm:text-base sm:leading-8">
               <p>
-                Lamees (لمیس) is a women&apos;s eastern wear label from Lahore. We make embroidered
-                dresses, stitched and unstitched suits and everyday kurtis that feel as good to wear
-                as they look.
+                HAANI Threads brings together unstitched fabrics for the seasons and moments that
+                matter. Pick the pieces that feel like you, then have them tailored your way.
               </p>
 
               <p>
-                We believe a beautiful suit should not be kept only for special occasions - or cost
-                a fortune. So we focus on considered fabrics, careful embroidery and honest prices,
-                and we deliver straight to your door anywhere in Pakistan.
+                Our edit is rooted in expressive prints, thoughtful embroidery and the freedom to
+                make each look your own. We deliver across Pakistan.
               </p>
 
               <p>
@@ -149,8 +146,8 @@ export default function AboutPage() {
 
           <div className="relative mx-auto aspect-square w-full max-w-sm overflow-hidden rounded-2xl bg-black lg:max-w-none">
             <Image
-              src="/lamees-logo.jpg"
-              alt="Lamees logo in Urdu calligraphy"
+              src="/haani-fabrics-hero.png"
+              alt="Embroidered unstitched fabric and floral dupatta"
               fill
               sizes="(min-width: 1024px) 420px, 384px"
               className="object-cover"
@@ -182,7 +179,7 @@ export default function AboutPage() {
 
       {/* Promises */}
       <Container className="py-12 lg:py-16">
-        <h2 className="text-2xl font-semibold tracking-tight">Why shop with Lamees</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">Why shop with HAANI Threads</h2>
 
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {PROMISES.map((item) => (

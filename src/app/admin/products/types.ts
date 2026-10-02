@@ -41,9 +41,11 @@ export interface Product {
   price: number;
   sale_price: number | null;
   stock_quantity: number;
+  piece_count: 2 | 3 | null;
   /* products.category_id is a nullable FK in schema.sql. */
   category_id: string | null;
   featured: boolean;
+  is_enabled: boolean;
   categories: ProductCategory | null;
   /* Sorted primary-first, then by display_order - the storefront's order. */
   product_images: ProductImage[];
@@ -61,6 +63,7 @@ export interface ProductPayload {
   price: number;
   sale_price: number | null;
   stock_quantity: number;
+  piece_count: 2 | 3 | null;
   category_id: string;
   featured: boolean;
 }

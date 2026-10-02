@@ -3,9 +3,9 @@ import { NEW_ARRIVAL_MONTHS } from "@/src/app/lib/products";
 import { pageMetadata } from "@/src/app/lib/seo";
 
 export const metadata = pageMetadata({
-  title: "New Arrivals - Latest Eastern Wear Collection | Lamees",
+  title: "New Arrivals - Latest Eastern Wear Collection | HAANI Threads",
   description:
-    "The newest embroidered dresses, stitched and unstitched suits, kurtis and pret wear at Lamees. Fresh Pakistani eastern wear designs, delivered across Pakistan.",
+    "The newest embroidered dresses, stitched and unstitched suits, kurtis and pret wear at HAANI Threads. Fresh Pakistani eastern wear designs, delivered across Pakistan.",
   path: "/new-arrivals",
 });
 

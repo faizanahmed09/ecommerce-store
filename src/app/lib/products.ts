@@ -326,6 +326,7 @@ export interface ProductQuery {
   sale?: boolean;
   minPrice?: number;
   maxPrice?: number;
+  pieceCount?: 2 | 3;
   /* Undefined leaves the ordering to PostgREST. */
   sort?: string;
   limit?: number;
@@ -661,6 +662,10 @@ export async function fetchStorefrontProductPage(
 
   if (options.maxPrice !== undefined) {
     query.lte("price", options.maxPrice);
+  }
+
+  if (options.pieceCount !== undefined) {
+    query.eq("piece_count", options.pieceCount);
   }
 
   if (options.sort !== undefined) {

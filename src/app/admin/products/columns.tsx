@@ -56,14 +56,18 @@ const effectivePrice = (product: Product): number =>
 
 interface ProductColumnActions {
   deletingId: string | null;
+  togglingId: string | null;
   onEdit: (product: Product) => void;
   onDelete: (id: string, name: string) => void;
+  onToggle: (product: Product) => void;
 }
 
 export function productColumns({
   deletingId,
+  togglingId,
   onEdit,
   onDelete,
+  onToggle,
 }: ProductColumnActions): AdminColumnDef<Product>[] {
   return [
     selectionColumn<Product>(),
@@ -80,6 +84,9 @@ export function productColumns({
             <div className="font-bold leading-tight text-neutral-800">{row.original.name}</div>
 
             <div className="mt-0.5 font-mono text-[10px] text-neutral-400">{row.original.slug}</div>
+            {!row.original.is_enabled && (
+              <div className="mt-0.5 text-[10px] text-neutral-500">Disabled</div>
+            )}
           </div>
         </div>
       ),
@@ -99,7 +106,7 @@ export function productColumns({
       cell: ({ row }) =>
         row.original.sale_price !== null ? (
           <div className="flex flex-col">
-            <span className="font-bold text-[#FF3D6E]">
+            <span className="font-bold text-brand-strong">
               {formatCurrency(row.original.sale_price)}
             </span>
 
@@ -125,12 +132,34 @@ export function productColumns({
       header: "Featured",
       cell: ({ row }) =>
         row.original.featured ? (
-          <Badge className="border-none bg-[#FF3D6E]/10 text-[9px] font-bold text-[#FF3D6E] hover:bg-[#FF3D6E]/15">
+          <Badge className="border-none bg-brand/10 text-[9px] font-bold text-brand-strong hover:bg-brand/15">
             FEATURED
           </Badge>
         ) : (
           <span className="text-xs text-neutral-300">-</span>
         ),
+    },
+
+    {
+      id: "visibility",
+      accessorFn: (product) => product.is_enabled,
+      header: "Visible",
+      cell: ({ row }) => (
+        <button
+          type="button"
+          role="switch"
+          aria-checked={row.original.is_enabled}
+          aria-label={`Show ${row.original.name} on storefront`}
+          disabled={togglingId !== null}
+          onClick={() => onToggle(row.original)}
+          className={`relative inline-flex h-5 w-9 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-strong focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${row.original.is_enabled ? "bg-emerald-600" : "bg-neutral-300"}`}
+        >
+          <span
+            aria-hidden="true"
+            className={`absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${row.original.is_enabled ? "translate-x-4" : "translate-x-0"}`}
+          />
+        </button>
+      ),
     },
 
     {

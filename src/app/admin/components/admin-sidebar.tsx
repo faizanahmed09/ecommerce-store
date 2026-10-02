@@ -78,7 +78,7 @@ export function AdminSidebar({ className, onClose }: SidebarProps) {
         >
           <ShieldCheck className="h-6 w-6 text-brand" />
           <span>
-            LAMEES{" "}
+            HAANI THREADS{" "}
             <span className="rounded bg-neutral-800 px-1 py-0.5 text-xs font-semibold text-brand">
               ADMIN
             </span>

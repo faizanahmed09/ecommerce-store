@@ -38,8 +38,8 @@ const inter = Inter({ subsets: ["latin"] });
  * URLs. No canonical here: it would be inherited by every page
  * that does not set its own, marking each as a copy of the
  * homepage. Icons are picked up from the
- * files beside this layout (favicon.ico, icon.png,
- * apple-icon.png); the share card is public/og-image.jpg.
+ * files beside this layout (icon.png, apple-icon.png);
+ * the share card is public/haani-fabrics-hero.png.
  */
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#fbf8f2",
 };
 
 export default async function RootLayout({
@@ -96,7 +96,12 @@ export default async function RootLayout({
         {/* Who the shop is, for search engines: name, logo, address, contact. */}
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
 
-        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          forcedTheme="light"
+          disableTransitionOnChange
+        >
           {/* Outermost of the data providers: the others read through it. */}
           <QueryProvider>
             <AuthProvider>

@@ -68,7 +68,7 @@ export default function MobileNav({ onNavigate }: MobileNavProps) {
                   onClick={onNavigate}
                   className={cn(
                     "text-[15px] font-semibold uppercase tracking-[0.08em] transition-colors",
-                    category.accent ? "text-[#FF3D6E]" : "text-neutral-900 hover:text-neutral-500"
+                    category.accent ? "text-brand-strong" : "text-neutral-900 hover:text-neutral-500"
                   )}
                 >
                   {category.name}

@@ -43,6 +43,7 @@ import {
   fetchRootCategories,
   type CategoryRecord,
 } from "@/src/app/lib/categories";
+import { visibleCategories } from "@/src/app/lib/category-visibility";
 import { CATEGORIES_TAG, PRODUCTS_TAG } from "@/src/app/lib/cache-tags";
 import {
   fetchProductBySlug,
@@ -182,7 +183,7 @@ export async function getAllCategories(): Promise<CategoryRecord[]> {
   cacheLife("hours");
   cacheTag(CATEGORIES_TAG);
 
-  return fetchCategories(createClient());
+  return visibleCategories(await fetchCategories(createClient()));
 }
 
 export interface SitemapProduct {

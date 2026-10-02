@@ -16,7 +16,7 @@ import { FREE_SHIPPING_COPY } from "@/src/app/lib/order-totals";
 const OPEN_DELAY = 90;
 const CLOSE_DELAY = 160;
 
-export function MegaMenu() {
+export function MegaMenu({ light = false }: { light?: boolean }) {
   const { categories, loading } = useNavigation();
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
@@ -98,7 +98,7 @@ export function MegaMenu() {
           ? /* Placeholder bar so the header keeps its height. */
             Array.from({ length: 6 }).map((_, index) => (
               <li key={index} className="py-3.5">
-                <span className="block h-3 w-16 animate-pulse rounded bg-neutral-100" />
+                <span className={cn("block h-3 w-16 animate-pulse rounded", light ? "bg-white/30" : "bg-neutral-100")} />
               </li>
             ))
           : null}
@@ -118,19 +118,21 @@ export function MegaMenu() {
                 onClick={closeNow}
                 aria-expanded={hasPanel ? isOpen : undefined}
                 className={cn(
-                  "group relative block whitespace-nowrap py-3.5 text-[12.5px] font-semibold uppercase tracking-[0.08em] transition-colors xl:text-[13px]",
+                  "group relative block whitespace-nowrap py-4 text-[13px] font-medium uppercase tracking-[0.16em] transition-colors xl:text-[14px]",
                   category.accent
-                    ? "text-brand-strong"
-                    : isOpen || isCurrent(category.href)
-                      ? "text-neutral-900"
-                      : "text-neutral-700 hover:text-neutral-900"
+                    ? light ? "text-[#f0c36b]" : "text-brand-strong"
+                    : light
+                      ? "text-white hover:text-white/80"
+                      : isOpen || isCurrent(category.href)
+                        ? "text-neutral-900"
+                        : "text-neutral-700 hover:text-neutral-900"
                 )}
               >
                 {category.name}
                 <span
                   className={cn(
                     "absolute bottom-2 left-0 h-[1.5px] transition-all duration-200",
-                    category.accent ? "bg-[#FF3D6E]" : "bg-neutral-900",
+                    category.accent ? "bg-brand" : light ? "bg-white" : "bg-neutral-900",
                     isOpen || isCurrent(category.href) ? "w-full" : "w-0 group-hover:w-full"
                   )}
                 />
@@ -170,23 +172,20 @@ type MegaMenuPanelProps = {
 };
 
 function MegaMenuPanel({ category, onMouseEnter, onMouseLeave, onNavigate }: MegaMenuPanelProps) {
-  const feature = category.feature;
-
   return (
     <div
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className="absolute inset-x-0 top-full z-40 border-t border-neutral-100 bg-white shadow-[0_28px_60px_-32px_rgba(0,0,0,0.45)] duration-200 ease-out animate-in fade-in-0 slide-in-from-top-1"
     >
-      {/* Hairline in the brand pink so the panel reads as part of the header. */}
+      {/* A subtle brand hairline ties the panel to the header. */}
       <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/60 to-transparent" />
 
       <div className="mx-auto max-w-7xl px-4 py-9">
         <div className="grid grid-cols-12 gap-10">
           <div
             className={cn(
-              "grid gap-x-8 gap-y-8",
-              feature ? "col-span-8" : "col-span-12",
+              "col-span-12 grid gap-x-8 gap-y-8",
               (category.groups?.length ?? 0) > 3 ? "grid-cols-4" : "grid-cols-3"
             )}
           >
@@ -225,34 +224,6 @@ function MegaMenuPanel({ category, onMouseEnter, onMouseLeave, onNavigate }: Meg
               </div>
             ))}
           </div>
-
-          {feature && (
-            <div className="col-span-4">
-              <Link
-                href={feature.href}
-                onClick={onNavigate}
-                className={cn(
-                  "group/feature relative flex h-full min-h-[220px] flex-col justify-end overflow-hidden rounded-2xl bg-gradient-to-br p-6 text-white",
-                  feature.gradient
-                )}
-              >
-                <span className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 transition-transform duration-500 group-hover/feature:scale-125" />
-                <span className="relative text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70">
-                  {feature.eyebrow}
-                </span>
-                <h3 className="relative mt-2 text-2xl font-semibold leading-tight">
-                  {feature.title}
-                </h3>
-                <p className="relative mt-2 text-sm leading-relaxed text-white/80">
-                  {feature.description}
-                </p>
-                <span className="relative mt-5 inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.12em]">
-                  {feature.cta}
-                  <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/feature:translate-x-1" />
-                </span>
-              </Link>
-            </div>
-          )}
         </div>
 
         <div className="mt-8 flex items-center justify-between border-t border-neutral-100 pt-5">

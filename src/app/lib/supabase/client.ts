@@ -19,9 +19,11 @@
  */
 
 import { createBrowserClient } from "@supabase/ssr";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
 
 let client: ReturnType<typeof createBrowserClient<Database>> | null = null;
+let publicClient: ReturnType<typeof createSupabaseClient<Database>> | null = null;
 
 export function createClient() {
   if (client) return client;
@@ -40,4 +42,21 @@ export function createClient() {
    */
   client = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);
   return client;
+}
+
+/* Storefront catalogue reads must use public RLS even in an admin's browser. */
+export function createPublicClient() {
+  if (publicClient) return publicClient;
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error("Missing Supabase environment variables");
+  }
+
+  publicClient = createSupabaseClient<Database>(supabaseUrl, supabaseAnonKey, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
+  return publicClient;
 }

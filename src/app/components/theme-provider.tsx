@@ -34,6 +34,7 @@ type ThemeProviderProps = {
   children: React.ReactNode;
   attribute?: string;
   defaultTheme?: Theme;
+  forcedTheme?: Exclude<Theme, "system">;
   enableSystem?: boolean;
   disableTransitionOnChange?: boolean;
 };
@@ -141,6 +142,7 @@ export function ThemeProvider({
   children,
   attribute = "class",
   defaultTheme = "light",
+  forcedTheme,
   enableSystem = false,
   disableTransitionOnChange = false,
 }: ThemeProviderProps) {
@@ -161,6 +163,10 @@ export function ThemeProvider({
   const suppressTransition = useRef(false);
 
   const theme: Theme = useMemo(() => {
+    if (forcedTheme) {
+      return forcedTheme;
+    }
+
     const initial = storedTheme ?? defaultTheme;
 
     if (enableSystem && (!storedTheme || initial === "system")) {
@@ -168,7 +174,7 @@ export function ThemeProvider({
     }
 
     return initial;
-  }, [storedTheme, defaultTheme, enableSystem, prefersDark]);
+  }, [storedTheme, defaultTheme, forcedTheme, enableSystem, prefersDark]);
 
   const resolvedTheme: "light" | "dark" =
     theme === "system" ? (prefersDark ? "dark" : "light") : theme;

@@ -18,7 +18,7 @@
 
 import nodemailer from "nodemailer";
 
-export const STORE_NAME = "Lamees";
+export const STORE_NAME = "HAANI Threads";
 
 /*
  * Whether mail can be sent at all.

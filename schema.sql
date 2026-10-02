@@ -17,6 +17,7 @@ CREATE TABLE categories (
   description TEXT,
   parent_id UUID REFERENCES categories(id),
   image_url TEXT,
+  is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -30,8 +31,10 @@ CREATE TABLE products (
   price DECIMAL(10, 2) NOT NULL,
   sale_price DECIMAL(10, 2),
   stock_quantity INTEGER NOT NULL DEFAULT 0,
+  piece_count SMALLINT CHECK (piece_count IN (2, 3)),
   category_id UUID REFERENCES categories(id),
   featured BOOLEAN DEFAULT false,
+  is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -248,11 +251,64 @@ ALTER TABLE products         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE product_images   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE product_variants ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "categories_public_read" ON categories FOR SELECT USING (true);
+-- A child's public visibility follows its parent. SECURITY DEFINER avoids
+-- a self-referential categories RLS policy while reading the two rows.
+CREATE OR REPLACE FUNCTION public.category_is_enabled(p_category_id uuid)
+RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT COALESCE(
+    (SELECT c.is_enabled AND COALESCE(parent.is_enabled, true)
+     FROM public.categories c
+     LEFT JOIN public.categories parent ON parent.id = c.parent_id
+     WHERE c.id = p_category_id),
+    false
+  );
+$$;
+GRANT EXECUTE ON FUNCTION public.category_is_enabled(uuid) TO anon, authenticated;
+
+-- Keep the stored child state in sync when an admin disables a parent.
+CREATE OR REPLACE FUNCTION public.disable_category_descendants()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+BEGIN
+  IF OLD.is_enabled AND NOT NEW.is_enabled THEN
+    UPDATE public.categories
+    SET is_enabled = false
+    WHERE parent_id = NEW.id AND is_enabled;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER categories_disable_descendants
+AFTER UPDATE OF is_enabled ON public.categories
+FOR EACH ROW EXECUTE FUNCTION public.disable_category_descendants();
+
+CREATE POLICY "categories_public_read" ON categories
+  FOR SELECT USING (public.category_is_enabled(id));
 CREATE POLICY "categories_admin_write" ON categories FOR ALL
   USING (public.is_admin()) WITH CHECK (public.is_admin());
 
-CREATE POLICY "products_public_read" ON products FOR SELECT USING (true);
+CREATE POLICY "products_public_read" ON products FOR SELECT
+  USING (is_enabled AND (category_id IS NULL OR public.category_is_enabled(category_id)));
+
+-- Refuse a saved cart line if its product or category was disabled.
+CREATE OR REPLACE FUNCTION public.reject_disabled_order_item()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+BEGIN
+  IF NEW.product_id IS NOT NULL AND NOT EXISTS (
+    SELECT 1 FROM public.products p
+    WHERE p.id = NEW.product_id
+      AND p.is_enabled
+      AND (p.category_id IS NULL OR public.category_is_enabled(p.category_id))
+  ) THEN
+    RAISE EXCEPTION 'This product is no longer available.' USING errcode = 'LM001';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER order_items_reject_disabled_product
+BEFORE INSERT ON public.order_items
+FOR EACH ROW EXECUTE FUNCTION public.reject_disabled_order_item();
 CREATE POLICY "products_admin_write" ON products FOR ALL
   USING (public.is_admin()) WITH CHECK (public.is_admin());
 

@@ -86,7 +86,7 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       <PageHeader
         title="Dashboard"
-        description="Welcome to Lamees back office. Here is an overview of your store."
+        description="Welcome to HAANI Threads back office. Here is an overview of your store."
       >
         <RefreshButton onClick={reload} loading={loading} />
 

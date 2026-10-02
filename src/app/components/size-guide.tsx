@@ -22,6 +22,7 @@ import {
   formatMeasurement,
   SIZE_CHARTS,
   SIZES,
+  UNSTITCHED_MEASUREMENTS,
   UNITS,
   type SizeChart,
   type Unit,
@@ -53,7 +54,11 @@ export function SizeGuide({ productName }: { productName: string }) {
 
         {/* The tables scroll, the header and its close button do not. */}
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6">
-          <UnitToggle unit={unit} onChange={setUnit} />
+          <UnstitchedTable />
+
+          <div className="mt-8">
+            <UnitToggle unit={unit} onChange={setUnit} />
+          </div>
 
           <div className="mt-6 space-y-8">
             {SIZE_CHARTS.map((chart) => (
@@ -62,12 +67,46 @@ export function SizeGuide({ productName }: { productName: string }) {
           </div>
 
           <p className="mt-8 text-center text-xs leading-5 text-muted-foreground">
-            Measurements are of the garment itself, in {unit === "cm" ? "centimetres" : "inches"}.
-            Compare them against a piece you already own for the closest fit.
+            Kurti and trouser measurements are of the garment itself, in {unit === "cm" ? "centimetres" : "inches"}.
+            Unstitched fabric measurements are in yards.
           </p>
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function UnstitchedTable() {
+  return (
+    <section>
+      <h3 className="mb-3 text-center text-sm font-semibold">Unstitched</h3>
+      <div className="overflow-hidden rounded-xl border">
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="border-b bg-muted/40">
+              <th scope="col" className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Measurement
+              </th>
+              <th scope="col" className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Value
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {UNSTITCHED_MEASUREMENTS.map((measurement) => (
+              <tr key={measurement.label} className="even:bg-muted/20">
+                <th scope="row" className="px-4 py-2.5 text-left font-medium text-foreground">
+                  {measurement.label}
+                </th>
+                <td className="px-4 py-2.5 text-right tabular-nums text-muted-foreground">
+                  {measurement.yards} Yard
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
 

@@ -7,7 +7,7 @@ export const instant = false;
 
 export const metadata = {
   title: "Privacy Policy",
-  description: "How Lamees handles your personal information.",
+  description: "How HAANI Threads handles your personal information.",
   alternates: { canonical: "/privacy" },
 };
 

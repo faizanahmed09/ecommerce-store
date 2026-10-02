@@ -15,7 +15,7 @@ import { whatsappHref } from "@/src/app/lib/store-contact";
  * that appears on every page.
  */
 
-const GREETING = "Hi! I'd like to ask about an order from Lamees.";
+const GREETING = "Hi! I'd like to ask about an order from HAANI Threads.";
 
 export function WhatsAppButton() {
   return (

@@ -1,6 +1,5 @@
 import { CategoryShowcase } from "@/src/app/components/category-showcase";
 import { CouponModal } from "@/src/app/components/coupon-modal";
-import { FeaturedPicks } from "@/src/app/components/featured-picks";
 import { FeaturedProducts } from "@/src/app/components/featured-products";
 import { HeroSection } from "@/src/app/components/hero-section";
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, pageMetadata } from "@/src/app/lib/seo";
@@ -39,7 +38,6 @@ export default function Home() {
       <HeroSection />
       <CategoryShowcase />
       <FeaturedProducts />
-      <FeaturedPicks />
 
       {/*
         The newsletter sign-up lives in the footer on every

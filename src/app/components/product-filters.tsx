@@ -28,6 +28,7 @@ interface ProductFiltersProps {
    * while it ran. Making it a prop keeps both out of the client.
    */
   options: VariantGroup[];
+  showPieceFilter?: boolean;
 }
 
 const MIN_PRICE = 0;
@@ -55,7 +56,7 @@ const CSS_COLORS = new Set([
   "teal",
 ]);
 
-export function ProductFilters({ options }: ProductFiltersProps) {
+export function ProductFilters({ options, showPieceFilter = false }: ProductFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -70,6 +71,18 @@ export function ProductFilters({ options }: ProductFiltersProps) {
   const [selectedValues, setSelectedValues] = useState<string[]>(
     searchParams.get(VARIANTS_PARAM)?.split(",").filter(Boolean) ?? []
   );
+  const pieceCount = searchParams.get("pieces") ?? "";
+
+  const setPieceCount = (value: "" | "2" | "3") => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set("pieces", value);
+    } else {
+      params.delete("pieces");
+    }
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  };
 
   const toggleValue = (value: string) => {
     setSelectedValues((current) =>
@@ -78,8 +91,8 @@ export function ProductFilters({ options }: ProductFiltersProps) {
   };
 
   const accordionSections = useMemo(
-    () => ["price", ...variantGroups.map((group) => group.name)],
-    [variantGroups]
+    () => [...(showPieceFilter ? ["pieces"] : []), "price", ...variantGroups.map((group) => group.name)],
+    [variantGroups, showPieceFilter]
   );
 
   const applyFilters = () => {
@@ -136,6 +149,28 @@ export function ProductFilters({ options }: ProductFiltersProps) {
       </div>
 
       <Accordion type="multiple" defaultValue={accordionSections} className="w-full">
+        {showPieceFilter && (
+          <AccordionItem value="pieces">
+            <AccordionTrigger>Pieces</AccordionTrigger>
+            <AccordionContent>
+              <div key={pieceCount} className="space-y-2">
+                {(["", "2", "3"] as const).map((value) => (
+                  <label key={value} className="flex cursor-pointer items-center gap-2 text-sm">
+                    <input
+                      type="radio"
+                      name="piece-count"
+                      value={value}
+                      defaultChecked={pieceCount === value}
+                      onChange={() => setPieceCount(value)}
+                      className="accent-neutral-900"
+                    />
+                    {value === "" ? "All pieces" : `${value} Piece`}
+                  </label>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        )}
         <AccordionItem value="price">
           <AccordionTrigger>Price Range</AccordionTrigger>
 
@@ -224,7 +259,7 @@ export function ProductFilters({ options }: ProductFiltersProps) {
 
       {variantGroups.length === 0 && (
         <p className="text-xs text-muted-foreground">
-          No product options are defined yet, so only the price filter is available.
+          No product options are defined yet; use the available filters above.
         </p>
       )}
 

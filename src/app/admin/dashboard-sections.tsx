@@ -139,7 +139,7 @@ export function QuickLinks({ links }: { links: QuickLink[] }) {
 
       <div className="mt-6 border-t border-neutral-100 pt-4 text-center">
         <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-300">
-          Lamees Dashboard v1.0.0
+          HAANI Threads Dashboard v1.0.0
         </span>
       </div>
     </div>

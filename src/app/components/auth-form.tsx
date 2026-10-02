@@ -208,7 +208,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         }
 
         toast({
-          title: "Welcome to Lamees",
+          title: "Welcome to HAANI Threads",
           description: "Your account is ready.",
         });
 
@@ -391,7 +391,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
       </form>
 
       <p className="mt-8 text-center text-sm text-muted-foreground">
-        {isSignup ? "Already have an account?" : "New to Lamees?"}{" "}
+        {isSignup ? "Already have an account?" : "New to HAANI Threads?"}{" "}
         <Link
           href={isSignup ? "/login" : "/signup"}
           className="font-medium text-foreground underline underline-offset-4"
@@ -423,7 +423,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         />
 
         <Link href="/" className="relative text-lg font-semibold tracking-[0.2em] text-white">
-          LAMEES
+          HAANI THREADS
         </Link>
 
         <div className="relative max-w-sm">
@@ -450,7 +450,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
           </ul>
         </div>
 
-        <p className="relative text-xs text-white/30">&copy; Lamees. All rights reserved.</p>
+        <p className="relative text-xs text-white/30">&copy; HAANI Threads. All rights reserved.</p>
       </div>
 
       {/* Form panel */}

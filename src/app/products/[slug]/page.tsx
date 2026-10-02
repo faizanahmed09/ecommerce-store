@@ -72,7 +72,7 @@ export async function generateMetadata({ params }: { params: Params }) {
 
     if (!product) {
       return {
-        title: "Product Not Found | Lamees",
+        title: "Product Not Found | HAANI Threads",
         description: "The requested product could not be found.",
         robots: NO_INDEX,
       };
@@ -81,14 +81,14 @@ export async function generateMetadata({ params }: { params: Params }) {
     const image = getPrimaryImage(product);
 
     return pageMetadata({
-      title: `${product.name}${product.categories?.name ? ` - ${product.categories.name}` : ""} | Lamees`,
+      title: `${product.name}${product.categories?.name ? ` - ${product.categories.name}` : ""} | HAANI Threads`,
       description: product.description || defaultProductDescription(product),
       path: `/products/${product.slug}`,
       ...(image ? { images: [image] } : {}),
     });
   } catch {
     return {
-      title: "Product | Lamees",
+      title: "Product | HAANI Threads",
       description: "View product details and purchase options.",
     };
   }

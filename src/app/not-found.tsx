@@ -4,7 +4,7 @@ import { Compass } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Page Not Found | Lamees",
+  title: "Page Not Found | HAANI Threads",
 };
 
 /*

@@ -6,8 +6,8 @@ import { Suspense } from "react";
 export const instant = false;
 
 export const metadata = {
-  title: "Sign In | Lamees",
-  description: "Sign in to your Lamees account.",
+  title: "Sign In | HAANI Threads",
+  description: "Sign in to your HAANI Threads account.",
   robots: { index: false, follow: true },
 };
 

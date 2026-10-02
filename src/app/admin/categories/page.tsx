@@ -6,16 +6,16 @@ import { Card, CardContent, CardHeader } from "@/src/app/components/ui/card";
 import { Skeleton } from "@/src/app/components/ui/skeleton";
 import {
   createCategory,
-  deleteCategory,
+  setCategoryEnabled,
   updateCategory,
   type CategoryPayload,
   type CategoryRecord,
 } from "@/src/app/lib/categories";
 import { cn } from "@/src/app/lib/utils";
+import { useInvalidateProducts } from "@/src/app/lib/use-product-list";
 import { FolderOpen, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
-  ConfirmDialog,
   EmptyState,
   getErrorMessage,
   PageHeader,
@@ -32,26 +32,29 @@ export default function AdminCategoriesPage() {
   const { toast } = useToast();
 
   const { categories, loading, reload: loadCategories } = useCategories();
+  const invalidateProducts = useInvalidateProducts();
 
   const [saving, setSaving] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editing, setEditing] = useState<CategoryRecord | null>(null);
   const [presetParentId, setPresetParentId] = useState<string | null>(null);
 
-  /* The category the confirm dialog is open for, if any. */
-  const [pendingDelete, setPendingDelete] = useState<CategoryRecord | null>(null);
+  const orderedCategories = useMemo(
+    () => [...categories].sort((a, b) => Number(b.is_enabled) - Number(a.is_enabled)),
+    [categories]
+  );
 
   const parentCategories = useMemo(
-    () => categories.filter((category) => !category.parent_id),
-    [categories]
+    () => orderedCategories.filter((category) => !category.parent_id),
+    [orderedCategories]
   );
 
   const childrenByParent = useMemo(() => {
     const groups = new Map<string, CategoryRecord[]>();
 
-    for (const category of categories) {
+    for (const category of orderedCategories) {
       if (!category.parent_id) {
         continue;
       }
@@ -66,7 +69,7 @@ export default function AdminCategoriesPage() {
     }
 
     return groups;
-  }, [categories]);
+  }, [orderedCategories]);
 
   const openCreate = (parentId: string | null = null) => {
     setEditing(null);
@@ -137,67 +140,36 @@ export default function AdminCategoriesPage() {
     }
   };
 
-  /*
-   * The card asks, the dialog confirms. Only the check that
-   * would make the delete impossible runs here, so the admin is
-   * not shown a modal for something that cannot happen.
-   */
-  const requestDelete = (category: CategoryRecord) => {
-    if (deletingId) {
+  const handleToggle = async (category: CategoryRecord) => {
+    if (togglingId) {
       return;
     }
 
-    /*
-     * Deleting a parent would orphan its children behind a
-     * foreign key, so the admin has to empty it first.
-     */
-    if ((childrenByParent.get(category.id)?.length ?? 0) > 0) {
-      toast({
-        title: "Cannot delete category",
-        description: `"${category.name}" contains subcategories. Delete or move them first.`,
-        variant: "destructive",
-      });
-
-      return;
-    }
-
-    setPendingDelete(category);
-  };
-
-  const handleDelete = async () => {
-    if (!pendingDelete || deletingId) {
-      return;
-    }
-
-    const category = pendingDelete;
-
-    setDeletingId(category.id);
+    const nextEnabled = !category.is_enabled;
+    setTogglingId(category.id);
 
     try {
-      await deleteCategory(category.id);
-
-      /* The row is gone, so its upload is dead weight. */
-      if (category.image_url) {
-        await removeImage(category.image_url);
-      }
+      await setCategoryEnabled(category.id, nextEnabled);
+      await invalidateProducts();
 
       toast({
-        title: "Category deleted",
-        description: `"${category.name}" has been deleted successfully.`,
+        title: nextEnabled ? "Category enabled" : "Category disabled",
+        description: nextEnabled
+          ? `"${category.name}" is visible again. Re-enable its subcategories separately if needed.`
+          : `"${category.name}", its subcategories, and their products are hidden from shoppers.`,
       });
 
       loadCategories();
     } catch (error: unknown) {
-      console.error("Category delete error:", error);
+      console.error("Category visibility error:", error);
 
       toast({
-        title: "Delete failed",
+        title: "Visibility update failed",
         description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {
-      setDeletingId(null);
-      setPendingDelete(null);
+      setTogglingId(null);
     }
   };
 
@@ -205,7 +177,7 @@ export default function AdminCategoriesPage() {
     <div className="space-y-6">
       <PageHeader
         title="Categories"
-        description="Structure your departments, parent categories, and product subcategories."
+        description="Organize categories and enable or disable them without deleting their products."
       >
         <RefreshButton onClick={loadCategories} loading={loading} />
 
@@ -220,7 +192,7 @@ export default function AdminCategoriesPage() {
         </Button>
       </PageHeader>
 
-      {loading ? (
+      {loading && categories.length === 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
             <Card key={index} className="border-neutral-200 shadow-sm">
@@ -255,29 +227,14 @@ export default function AdminCategoriesPage() {
               key={parent.id}
               category={parent}
               subcategories={childrenByParent.get(parent.id) ?? []}
-              deletingId={deletingId}
+              togglingId={togglingId}
               onEdit={openEdit}
-              onDelete={requestDelete}
+              onToggle={handleToggle}
               onAddSubcategory={openCreate}
             />
           ))}
         </div>
       )}
-
-      <ConfirmDialog
-        open={pendingDelete !== null}
-        onOpenChange={(open) => {
-          if (!open && !deletingId) {
-            setPendingDelete(null);
-          }
-        }}
-        title="Delete category"
-        description={`"${pendingDelete?.name ?? ""}" will be permanently deleted. This cannot be undone.`}
-        confirmLabel="Delete category"
-        confirmingLabel="Deleting..."
-        confirming={deletingId !== null}
-        onConfirm={handleDelete}
-      />
 
       <CategoryFormSheet
         open={isFormOpen}

@@ -180,7 +180,7 @@ export function ProductCard({
           onClick={() => toggle(product.id)}
           aria-label={isFavorite ? "Remove from wishlist" : "Add to wishlist"}
           aria-pressed={isFavorite}
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-neutral-600 shadow-sm backdrop-blur transition-all hover:bg-white hover:text-[#FF3D6E] focus-visible:opacity-100 disabled:opacity-60 sm:opacity-0 sm:group-hover:opacity-100"
+          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-neutral-600 shadow-sm backdrop-blur transition-all hover:bg-white hover:text-brand-strong focus-visible:opacity-100 disabled:opacity-60 sm:opacity-0 sm:group-hover:opacity-100"
         >
           <Heart className={cn("h-4 w-4", isFavorite && "fill-current text-brand-strong")} />
         </button>

@@ -12,24 +12,46 @@
 import { Button } from "@/src/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/app/components/ui/card";
 import type { CategoryRecord } from "@/src/app/lib/categories";
-import { ChevronRight, Edit2, FolderTree, Plus, Trash2 } from "lucide-react";
+import { ChevronRight, Edit2, FolderTree, Plus } from "lucide-react";
 
 interface CategoryCardProps {
   category: CategoryRecord;
   subcategories: CategoryRecord[];
-  /* The row currently being deleted, so only it is disabled. */
-  deletingId: string | null;
+  togglingId: string | null;
   onEdit: (category: CategoryRecord) => void;
-  onDelete: (category: CategoryRecord) => void;
+  onToggle: (category: CategoryRecord) => void;
   onAddSubcategory: (parentId: string) => void;
+}
+
+function VisibilitySwitch({
+  category,
+  togglingId,
+  onToggle,
+}: Pick<CategoryCardProps, "category" | "togglingId" | "onToggle">) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={category.is_enabled}
+      aria-label={`Show ${category.name} on storefront`}
+      disabled={togglingId !== null}
+      onClick={() => onToggle(category)}
+      className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-strong focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${category.is_enabled ? "bg-emerald-600" : "bg-neutral-300"}`}
+    >
+      <span
+        aria-hidden="true"
+        className={`absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${category.is_enabled ? "translate-x-4" : "translate-x-0"}`}
+      />
+    </button>
+  );
 }
 
 export function CategoryCard({
   category,
   subcategories,
-  deletingId,
+  togglingId,
   onEdit,
-  onDelete,
+  onToggle,
   onAddSubcategory,
 }: CategoryCardProps) {
   return (
@@ -39,7 +61,18 @@ export function CategoryCard({
           <div className="flex items-center gap-2">
             <FolderTree className="h-[18px] w-[18px] text-brand-strong" />
 
-            <CardTitle className="text-sm font-bold text-neutral-800">{category.name}</CardTitle>
+            <div>
+              <CardTitle className="text-sm font-bold text-neutral-800">{category.name}</CardTitle>
+              <span
+                className={
+                  category.is_enabled
+                    ? "text-[10px] text-emerald-700"
+                    : "text-[10px] text-neutral-500"
+                }
+              >
+                {category.is_enabled ? "Enabled" : "Disabled"}
+              </span>
+            </div>
           </div>
 
           <div className="flex gap-0.5">
@@ -55,18 +88,7 @@ export function CategoryCard({
               <span className="sr-only">Edit {category.name}</span>
             </Button>
 
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              disabled={deletingId === category.id}
-              onClick={() => onDelete(category)}
-              className="h-7 w-7 text-neutral-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
-              title="Delete category"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              <span className="sr-only">Delete {category.name}</span>
-            </Button>
+            <VisibilitySwitch category={category} togglingId={togglingId} onToggle={onToggle} />
           </div>
         </CardHeader>
 
@@ -102,12 +124,18 @@ export function CategoryCard({
                         {sub.name}
                       </span>
 
+                      {!sub.is_enabled || !category.is_enabled ? (
+                        <span className="text-[10px] text-neutral-500">
+                          {!category.is_enabled && sub.is_enabled ? "Hidden by parent" : "Disabled"}
+                        </span>
+                      ) : null}
+
                       <span className="hidden truncate font-mono text-[9px] text-neutral-400 sm:inline">
                         ({sub.slug})
                       </span>
                     </div>
 
-                    <div className="flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                    <div className="flex gap-0.5">
                       <Button
                         type="button"
                         variant="ghost"
@@ -120,18 +148,7 @@ export function CategoryCard({
                         <span className="sr-only">Edit {sub.name}</span>
                       </Button>
 
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        disabled={deletingId === sub.id}
-                        onClick={() => onDelete(sub)}
-                        className="h-6 w-6 text-neutral-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
-                        title="Delete subcategory"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                        <span className="sr-only">Delete {sub.name}</span>
-                      </Button>
+                      <VisibilitySwitch category={sub} togglingId={togglingId} onToggle={onToggle} />
                     </div>
                   </div>
                 ))}

@@ -3,9 +3,9 @@ import { SearchHeading } from "@/src/app/components/search-heading";
 import { pageMetadata } from "@/src/app/lib/seo";
 
 export const metadata = pageMetadata({
-  title: "All Eastern Wear - Stitched & Embroidered Suits | Lamees",
+  title: "All Eastern Wear - Stitched & Embroidered Suits | HAANI Threads",
   description:
-    "Browse all Lamees eastern wear for women: embroidered dresses, stitched 3-piece suits, unstitched lawn and kurtis. Cash on delivery across Pakistan.",
+    "Browse all HAANI Threads eastern wear for women: embroidered dresses, stitched 3-piece suits, unstitched lawn and kurtis. Cash on delivery across Pakistan.",
   path: "/products",
 });
 

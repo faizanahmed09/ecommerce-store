@@ -8,13 +8,13 @@ import { ChevronDown, Mail, MessageCircle } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = pageMetadata({
-  title: "FAQs - Orders, Delivery, Exchanges & Sizing | Lamees",
+  title: "FAQs - Orders, Delivery, Exchanges & Sizing | HAANI Threads",
   description:
-    "Answers to common questions about shopping at Lamees: cash on delivery, delivery charges and times, exchanges, stitched vs unstitched suits and sizing.",
+    "Answers to common questions about shopping at HAANI Threads: cash on delivery, delivery charges and times, exchanges, stitched vs unstitched suits and sizing.",
   path: "/faqs",
 });
 
-const ENQUIRY = "Hi! I have a question that is not on the Lamees FAQ page.";
+const ENQUIRY = "Hi! I have a question that is not on the HAANI Threads FAQ page.";
 
 /*
  * ---------------------------------------------------------
@@ -121,12 +121,12 @@ export default function FaqsPage() {
                 </a>
               </Button>
 
-              <Button asChild variant="outline" className="w-full rounded-full">
+              {STORE_EMAIL && <Button asChild variant="outline" className="w-full rounded-full">
                 <a href={mailtoHref}>
                   <Mail className="mr-2 h-4 w-4" />
                   {STORE_EMAIL}
                 </a>
-              </Button>
+              </Button>}
             </div>
 
             <p className="mt-5 border-t pt-4 text-xs leading-5 text-muted-foreground">

@@ -87,7 +87,7 @@ export const PRIVACY_POLICY: PolicyDocument = {
     {
       title: "Contact",
       body: [
-        `Questions about any of this go to ${STORE_EMAIL}. Our registered address is ${STORE_ADDRESS}.`,
+        `Questions about any of this can be sent through our contact page${STORE_EMAIL ? ` or to ${STORE_EMAIL}` : ""}. Our registered address is ${STORE_ADDRESS}.`,
       ],
     },
   ],

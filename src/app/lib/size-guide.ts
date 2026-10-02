@@ -80,3 +80,8 @@ export const SIZE_CHARTS: SizeChart[] = [
     ],
   },
 ];
+
+export const UNSTITCHED_MEASUREMENTS = [
+  { label: "Width", yards: 1.5 },
+  { label: "Suit Length", yards: 3.5 },
+] as const;

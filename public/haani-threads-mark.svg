@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="title">
+  <title id="title">HAANI Threads</title>
+  <rect width="100" height="100" rx="2" fill="#302b27"/>
+  <path d="M16 15h68M16 85h68" stroke="#c5a997" stroke-width="1.5"/>
+  <text x="50" y="66" text-anchor="middle" fill="#faf6ef" font-family="Georgia,serif" font-size="62" font-weight="400">H</text>
+</svg>

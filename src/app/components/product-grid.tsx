@@ -55,7 +55,7 @@ interface ProductGridProps {
  * Anything in the URL that changes which products are returned.
  * Their presence is what makes the server's preload wrong.
  */
-const FILTER_PARAMS = ["sort", "minPrice", "maxPrice", "variants", "q"] as const;
+const FILTER_PARAMS = ["sort", "minPrice", "maxPrice", "variants", "pieces", "q"] as const;
 
 export function ProductGrid({
   categorySlug,
@@ -103,6 +103,12 @@ export function ProductGrid({
     sort: searchParams.get("sort") ?? defaultSort ?? "featured",
     minPrice: readNumber("minPrice"),
     maxPrice: readNumber("maxPrice"),
+    pieceCount:
+      searchParams.get("pieces") === "2"
+        ? (2 as const)
+        : searchParams.get("pieces") === "3"
+          ? (3 as const)
+          : undefined,
     variantValues: searchParams.get("variants")?.split(",").filter(Boolean),
     /* The route may fix it; otherwise the header's ?q= does. */
     search: search ?? searchParams.get("q") ?? undefined,

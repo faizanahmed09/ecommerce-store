@@ -43,6 +43,8 @@ export default function AdminProductsPage() {
     filteredProducts,
     loading,
     deletingId,
+    togglingId,
+    toggleProduct,
     pendingDelete,
     loadData,
     requestDelete,
@@ -74,10 +76,12 @@ export default function AdminProductsPage() {
     () =>
       productColumns({
         deletingId,
+        togglingId,
+        onToggle: toggleProduct,
         onEdit: openForm,
         onDelete: requestDelete,
       }),
-    [deletingId, requestDelete]
+    [deletingId, togglingId, toggleProduct, requestDelete]
   );
 
   const handleFormOpenChange = (open: boolean): void => {

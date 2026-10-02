@@ -92,7 +92,7 @@ export function toLeopardsBooking(
     destination_city: input.destinationCityRef,
 
     /* The shipper - us. Their fields, our details. */
-    shipment_name_eng: process.env.NEXT_PUBLIC_STORE_NAME ?? "Lamees",
+    shipment_name_eng: process.env.NEXT_PUBLIC_STORE_NAME ?? "HAANI Threads",
     shipment_email: process.env.NEXT_PUBLIC_STORE_EMAIL ?? "",
     shipment_phone: process.env.NEXT_PUBLIC_STORE_PHONE ?? "",
     shipment_address: (process.env.NEXT_PUBLIC_STORE_ADDRESS ?? "").split("|").join(", "),

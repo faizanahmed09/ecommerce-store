@@ -7,7 +7,7 @@ export const instant = false;
 
 export const metadata = {
   title: "Shipping Policy",
-  description: "Delivery charges, timings and coverage for Lamees orders.",
+  description: "Delivery charges, timings and coverage for HAANI Threads orders.",
   alternates: { canonical: "/shipping" },
 };
 

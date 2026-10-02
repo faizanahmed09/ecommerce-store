@@ -5,7 +5,7 @@ import { Container } from "@/src/app/components/ui/container";
 import { toOrderNumber } from "@/src/app/lib/order-number";
 
 export const metadata = {
-  title: "Order Confirmation | Lamees",
+  title: "Order Confirmation | HAANI Threads",
   description: "Your order has been successfully placed",
   robots: { index: false, follow: true },
 };

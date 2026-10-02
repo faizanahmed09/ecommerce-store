@@ -9,13 +9,13 @@
  * looking at the same shape.
  *
  * Mirrors schema.sql: categories (name, slug, description,
- * parent_id, image_url).
+ * parent_id, image_url, is_enabled).
  */
 
 import { createClient } from "@/src/app/lib/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/src/app/lib/supabase/database.types";
-import { revalidateCategories } from "@/src/app/lib/revalidate";
+import { revalidateCategories, revalidateProducts } from "@/src/app/lib/revalidate";
 
 /*
  * Reads default to the browser client. Server components pass
@@ -31,9 +31,11 @@ export interface CategoryRecord {
   description: string | null;
   parent_id: string | null;
   image_url: string | null;
+  is_enabled: boolean;
 }
 
-export const CATEGORY_SELECT = "id, name, slug, description, parent_id, image_url";
+/* Select * also works before migration 016 is applied, when is_enabled is absent. */
+export const CATEGORY_SELECT = "*";
 
 type CategoryRow = Record<string, unknown>;
 
@@ -44,6 +46,7 @@ const mapCategory = (row: CategoryRow): CategoryRecord => ({
   description: (row.description as string | null) ?? null,
   parent_id: (row.parent_id as string | null) ?? null,
   image_url: (row.image_url as string | null) ?? null,
+  is_enabled: row.is_enabled !== false,
 });
 
 /* Every category, alphabetical - the admin list and pickers. */
@@ -203,17 +206,20 @@ export async function updateCategory(categoryId: string, payload: CategoryPayloa
     throw error;
   }
 
-  /* Departments and their children are cached on the storefront. */
-  await revalidateCategories();
+  /* Moving a category can also change which products are public. */
+  await Promise.all([revalidateCategories(), revalidateProducts()]);
 }
 
-export async function deleteCategory(categoryId: string): Promise<void> {
-  const { error } = await createClient().from("categories").delete().eq("id", categoryId);
+export async function setCategoryEnabled(categoryId: string, isEnabled: boolean): Promise<void> {
+  const { error } = await createClient()
+    .from("categories")
+    .update({ is_enabled: isEnabled })
+    .eq("id", categoryId);
 
   if (error) {
     throw error;
   }
 
-  /* Departments and their children are cached on the storefront. */
-  await revalidateCategories();
+  /* Product visibility changes with the category, so clear both caches. */
+  await Promise.all([revalidateCategories(), revalidateProducts()]);
 }

@@ -438,7 +438,7 @@ export function ProductReviews({
                       {review.admin_response && (
                         <div className="mt-4 rounded-xl border-l-2 border-brand bg-muted/40 p-3">
                           <p className="text-xs font-semibold">
-                            Response from Lamees
+                            Response from HAANI Threads
                             {review.admin_response_at && (
                               <span className="ml-2 font-normal text-muted-foreground">
                                 {formatReviewDate(review.admin_response_at)}

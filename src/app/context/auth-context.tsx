@@ -2,6 +2,7 @@
 "use client";
 
 import { createClient } from "@/src/app/lib/supabase/client";
+import { invalidateCategories } from "@/src/app/components/category-provider";
 import { ensureUserProfile, fetchUserProfileByEmail, type UserProfile } from "@/src/app/lib/users";
 import type { AuthError, PostgrestError, User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
@@ -111,6 +112,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
       });
+      if (!error) {
+        invalidateCategories();
+      }
       return { error };
     } catch (error) {
       console.error("Sign in error:", error);
@@ -247,6 +251,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { error } = await supabase.auth.signOut();
       setUser(null);
+      if (!error) {
+        invalidateCategories();
+      }
       return { error };
     } catch (error) {
       console.error("Sign out error:", error);

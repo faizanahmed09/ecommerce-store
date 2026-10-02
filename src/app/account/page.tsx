@@ -230,7 +230,7 @@ export default function AccountPage() {
           */}
           {isAdminProfile(profile) && (
             <Button
-              className="bg-[#FF3D6E] font-semibold text-white hover:bg-[#E0345F]"
+              className="bg-brand font-semibold text-brand-foreground hover:bg-brand-strong"
               onClick={() => router.push("/admin")}
             >
               Admin Portal

@@ -55,6 +55,12 @@ const nextConfig: NextConfig = {
    * whether the route still builds.
    */
   cacheComponents: true,
+  /* Auth-gated client pages cannot render during the dev-only instant check. */
+  experimental: {
+    instantInsights: {
+      validationLevel: "manual-warning",
+    },
+  },
 
   /*
    * Turbopack infers the workspace root from the nearest lockfile, and a

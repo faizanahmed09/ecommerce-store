@@ -113,7 +113,7 @@ const OVERRIDES: Record<string, DepartmentOverride> = Object.fromEntries(
         name: "Kids",
         metaTitle: "Girls Eastern Wear - Frocks & Shalwar Kameez",
         metaDescription:
-          "Kids eastern wear for Eid, weddings and every day: embroidered frocks, kurtis and shalwar kameez for girls. Shop online in Pakistan at Lamees.",
+          "Kids eastern wear for Eid, weddings and every day: embroidered frocks, kurtis and shalwar kameez for girls. Shop online in Pakistan at HAANI Threads.",
         hero: {
           title: "Kids Collection",
           description:
@@ -138,7 +138,7 @@ const OVERRIDES: Record<string, DepartmentOverride> = Object.fromEntries(
         name: "Fragrance",
         metaTitle: "Women's Fragrances & Perfumes",
         metaDescription:
-          "Discover Lamees fragrances: perfumes for women, made to pair with your eastern wear. Shop online with cash on delivery in Pakistan.",
+          "Discover HAANI Threads fragrances: perfumes for women, made to pair with your eastern wear. Shop online with cash on delivery in Pakistan.",
         hero: {
           title: "Fragrance Collection",
           description: "Discover our exclusive collection of premium fragrances for women.",
@@ -150,7 +150,7 @@ const OVERRIDES: Record<string, DepartmentOverride> = Object.fromEntries(
         name: "Winter Wear",
         metaTitle: "Winter Eastern Wear - Khaddar, Karandi & Shawls",
         metaDescription:
-          "Winter eastern wear in khaddar, karandi, marina and linen: embroidered stitched and unstitched suits, shawls and kurtis. Shop online in Pakistan at Lamees.",
+          "Winter eastern wear in khaddar, karandi, marina and linen: embroidered stitched and unstitched suits, shawls and kurtis. Shop online in Pakistan at HAANI Threads.",
         hero: {
           title: "Winter Collection",
           description: "Stay warm and stylish with our premium winter wear collection for women.",
@@ -172,7 +172,29 @@ const OVERRIDES: Record<string, DepartmentOverride> = Object.fromEntries(
         slug: "unstitched",
         metaTitle: "Unstitched Suits - Embroidered Lawn & 3-Piece",
         metaDescription:
-          "Unstitched suits in embroidered lawn, cotton, chiffon and khaddar - 2 and 3-piece fabric with dupatta, tailored your way. Shop online in Pakistan at Lamees.",
+          "Unstitched suits in embroidered lawn, cotton, chiffon and khaddar - 2 and 3-piece fabric with dupatta, tailored your way. Shop online in Pakistan at HAANI Threads.",
+      },
+      {
+        slug: "summer-unstitched",
+        metaTitle: "Summer Unstitched Fabrics",
+        metaDescription:
+          "Explore summer unstitched fabrics at HAANI Threads. Discover prints and embroidery to tailor your way.",
+        hero: {
+          title: "Summer Unstitched",
+          description: "Light, expressive fabrics for the warmer days ahead, ready to make your own.",
+          primaryCta: "Explore the collection",
+        },
+      },
+      {
+        slug: "winter-unstitched",
+        metaTitle: "Winter Unstitched Fabrics",
+        metaDescription:
+          "Explore winter unstitched fabrics at HAANI Threads. Discover seasonal textures to tailor your way.",
+        hero: {
+          title: "Winter Unstitched",
+          description: "Considered fabrics for cooler days, ready to become your own winter wardrobe.",
+          primaryCta: "Explore the collection",
+        },
       },
       {
         slug: "embroidered",
@@ -184,19 +206,19 @@ const OVERRIDES: Record<string, DepartmentOverride> = Object.fromEntries(
         slug: "pret",
         metaTitle: "Pret Wear - Ready to Wear Kurtis & Suits",
         metaDescription:
-          "Pret wear by Lamees: ready to wear kurtis, co-ord sets and embroidered 2 and 3-piece stitched suits for everyday and festive wear. Delivered across Pakistan.",
+          "Pret wear by HAANI Threads: ready to wear kurtis, co-ord sets and embroidered 2 and 3-piece stitched suits for everyday and festive wear. Delivered across Pakistan.",
       },
       {
         slug: "eastern-wear",
         metaTitle: "Eastern Wear - Pakistani Dresses Online",
         metaDescription:
-          "Pakistani eastern wear online: embroidered dresses, stitched and unstitched suits, kurtis and shalwar kameez for women. Cash on delivery at Lamees.",
+          "Pakistani eastern wear online: embroidered dresses, stitched and unstitched suits, kurtis and shalwar kameez for women. Cash on delivery at HAANI Threads.",
       },
       {
         slug: "lawn",
         metaTitle: "Lawn Suits - Embroidered & Printed Lawn",
         metaDescription:
-          "Lawn suits for summer: embroidered and printed lawn, stitched and unstitched 3-piece sets with chiffon dupattas. Shop the Lamees lawn collection online.",
+          "Lawn suits for summer: embroidered and printed lawn, stitched and unstitched 3-piece sets with chiffon dupattas. Shop the HAANI Threads lawn collection online.",
       },
       {
         slug: "formal",
@@ -238,7 +260,7 @@ export function buildDepartment(category: CategoryRecord): Department {
     metaDescription:
       override.metaDescription ??
       category.description ??
-      `Shop ${name.toLowerCase()} at Lamees: embroidered, stitched and unstitched Pakistani eastern wear, delivered across Pakistan with cash on delivery.`,
+      `Shop ${name.toLowerCase()} at HAANI Threads: embroidered, stitched and unstitched Pakistani eastern wear, delivered across Pakistan with cash on delivery.`,
     hero: {
       title: override.hero?.title ?? name,
       description: override.hero?.description ?? description,

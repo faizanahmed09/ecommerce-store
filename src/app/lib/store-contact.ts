@@ -19,7 +19,7 @@ export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "92300
 
 export const STORE_PHONE = process.env.NEXT_PUBLIC_STORE_PHONE ?? "+92 300 123 4567";
 
-export const STORE_EMAIL = process.env.NEXT_PUBLIC_STORE_EMAIL ?? "support@lamees.com";
+export const STORE_EMAIL = process.env.NEXT_PUBLIC_STORE_EMAIL ?? "";
 
 /*
  * The address as configured. "|" separates the lines the footer

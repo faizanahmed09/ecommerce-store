@@ -5,9 +5,9 @@ import { Container } from "@/src/app/components/ui/container";
 import { pageMetadata } from "@/src/app/lib/seo";
 
 export const metadata = pageMetadata({
-  title: "Sale - Embroidered & Stitched Suits Up to 50% Off | Lamees",
+  title: "Sale - Embroidered & Stitched Suits Up to 50% Off | HAANI Threads",
   description:
-    "Shop the Lamees sale: embroidered dresses, stitched 3-piece suits, lawn and kurtis at up to 50% off. Pakistani eastern wear with cash on delivery nationwide.",
+    "Shop the HAANI Threads sale: embroidered dresses, stitched 3-piece suits, lawn and kurtis at up to 50% off. Pakistani eastern wear with cash on delivery nationwide.",
   path: "/sale",
 });
 

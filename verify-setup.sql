@@ -28,18 +28,30 @@ WITH expected(kind, name) AS (
     ('function', 'claim_order_confirmation(uuid)'),
     ('function', 'track_order(text,text)'),
     ('function', 'list_variant_options()'),
+    ('function', 'category_is_enabled(uuid)'),
+    ('function', 'disable_category_descendants()'),
+    ('function', 'reject_disabled_order_item()'),
     ('function', 'sync_order_tracking()'),
     ('function', 'place_order(uuid,text,text,text,numeric,jsonb,text,text,text)'),
     ('column', 'orders.contact_phone'),
+    ('column', 'categories.is_enabled'),
+    ('column', 'products.is_enabled'),
+    ('column', 'products.piece_count'),
     ('column', 'orders.confirmation_sent_at'),
     ('column', 'coupons.promoted'),
     ('column', 'shipments.customer_notified_at'),
     ('trigger', 'auth.users.on_auth_user_created'),
     ('trigger', 'public.shipments.shipments_sync_order'),
+    ('trigger', 'public.categories.categories_disable_descendants'),
+    ('trigger', 'public.order_items.order_items_reject_disabled_product'),
     ('policy', 'public.reviews.reviews_insert_own'),
     ('policy', 'public.couriers.couriers_public_read'),
     ('policy', 'public.shipments.shipments_admin'),
-    ('bucket', 'Lamees-images')
+    ('bucket', 'Lamees-images'),
+    ('category', 'summer-unstitched'), ('category', 'winter-unstitched'),
+    ('product', 'demo-summer-lawn-3-piece'), ('product', 'demo-winter-khaddar-3-piece'),
+    ('enabled_policy', 'categories_public_read'),
+    ('enabled_policy', 'products_public_read')
 ), checks(kind, name) AS (
   SELECT kind, name FROM expected
   UNION ALL
@@ -76,6 +88,23 @@ WHERE CASE kind
       AND p.policyname = split_part(name, '.', 3)
   )
   WHEN 'bucket' THEN NOT EXISTS (SELECT 1 FROM storage.buckets b WHERE b.id = name)
+  WHEN 'category' THEN NOT EXISTS (
+    SELECT 1 FROM public.categories c WHERE c.slug = name AND c.parent_id IS NULL
+  )
+  WHEN 'product' THEN NOT EXISTS (
+    SELECT 1 FROM public.products p
+    JOIN public.categories c ON c.id = p.category_id
+    WHERE p.slug = name
+      AND c.slug = CASE name
+        WHEN 'demo-summer-lawn-3-piece' THEN 'summer-unstitched'
+        WHEN 'demo-winter-khaddar-3-piece' THEN 'winter-wear'
+      END
+  )
+  WHEN 'enabled_policy' THEN NOT EXISTS (
+    SELECT 1 FROM pg_policies p
+    WHERE p.schemaname = 'public' AND p.policyname = name
+      AND p.qual LIKE '%category_is_enabled%'
+  )
   WHEN 'rls' THEN NOT EXISTS (
     SELECT 1 FROM pg_class c
     WHERE c.oid = to_regclass('public.' || name) AND c.relrowsecurity

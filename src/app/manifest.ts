@@ -5,18 +5,18 @@ import { DEFAULT_DESCRIPTION, SITE_NAME } from "@/src/app/lib/seo";
 /*
  * /manifest.webmanifest - how the shop looks when a customer
  * adds it to their phone's home screen. The icons are cut from
- * public/lamees-logo.jpg; the maskable one keeps the lettering
+ * public/haani-threads-monogram-v2.png; the maskable one keeps the emblem
  * inside the circle Android crops launcher icons to.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: `${SITE_NAME} - Pakistani Eastern Wear`,
+    name: `${SITE_NAME} - Unstitched Fabrics`,
     short_name: SITE_NAME,
     description: DEFAULT_DESCRIPTION,
     start_url: "/",
     display: "standalone",
-    background_color: "#000000",
-    theme_color: "#000000",
+    background_color: "#fbf8f3",
+    theme_color: "#302b27",
     lang: "en-PK",
     categories: ["shopping", "lifestyle"],
     icons: [

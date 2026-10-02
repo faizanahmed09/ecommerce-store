@@ -1,6 +1,7 @@
 import { getCategoriesBySlugs, getCategoryChildren } from "@/src/app/lib/catalogue";
 import { ProductListing, type ListingSearchParams } from "@/src/app/components/product-listing";
 import { pageMetadata } from "@/src/app/lib/seo";
+import { notFound } from "next/navigation";
 
 /*
  * ---------------------------------------------------------
@@ -119,11 +120,13 @@ export async function CategoryListing({
 }: CategoryListingProps) {
   const category = await getCategory(slug, parentSlug);
 
+  if (category === null) {
+    notFound();
+  }
+
   /*
-   * The heading falls back to a readable version of the URL
-   * segment when the slug isn't in the categories table. It
-   * does NOT invent a description - an unknown category just
-   * shows an empty product list, which is the truth.
+   * A lookup error still gets the readable fallback heading,
+   * but a missing or disabled category has no public page.
    */
   const name = category?.name ?? titleFromSlug(slug);
 
@@ -183,12 +186,14 @@ export async function buildCategoryMetadata(
   const sale = context.parentSlug === "sale";
 
   return pageMetadata({
-    title: sale ? `${title} Sale - Eastern Wear Up to 50% Off | Lamees` : `${title} | Lamees`,
+    title: sale
+      ? `${title} Sale - Eastern Wear Up to 50% Off | HAANI Threads`
+      : `${title} | HAANI Threads`,
     description:
       category?.description ||
       (sale
-        ? `Shop discounted ${title.toLowerCase()} at Lamees: embroidered, stitched and unstitched eastern wear on sale, with cash on delivery across Pakistan.`
-        : `Shop ${title.toLowerCase()} online at Lamees: embroidered, stitched and unstitched Pakistani eastern wear, delivered across Pakistan with cash on delivery.`),
+        ? `Shop discounted ${title.toLowerCase()} at HAANI Threads: embroidered, stitched and unstitched eastern wear on sale, with cash on delivery across Pakistan.`
+        : `Shop ${title.toLowerCase()} online at HAANI Threads: embroidered, stitched and unstitched Pakistani eastern wear, delivered across Pakistan with cash on delivery.`),
     path: context.parentSlug ? `/${context.parentSlug}/${slug}` : `/${slug}`,
   });
 }

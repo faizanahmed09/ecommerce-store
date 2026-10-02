@@ -7,7 +7,7 @@ export const instant = false;
 
 export const metadata = {
   title: "Terms of Service",
-  description: "The terms that apply when you order from Lamees.",
+  description: "The terms that apply when you order from HAANI Threads.",
   alternates: { canonical: "/terms" },
 };
 
